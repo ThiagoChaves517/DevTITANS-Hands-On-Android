@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">PlainText</string>
     <string name="login">"Login: "</string>
+    <string name="login_title">Informe suas credenciais para continuar</string>
+    <string name="login_login">Login:</string>
+    <string name="login_senha">Senha:</string>
+    <!--    <string name="login_isCheck">Salvar Credenciais</string>-->
+    <string name="login_isCheck">Salvar as informações de login</string>
+    <string name="login_button">Entrar</string>
+    <string name="login_image_text">\"The most \nsecure password \nmanager\"</string>"
 </resources>
