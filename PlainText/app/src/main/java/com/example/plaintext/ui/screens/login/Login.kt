@@ -63,6 +63,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -273,7 +274,8 @@ private fun LoginScreen(
                 onValueChange = viewModel::updateLogin,
                 label = stringResource(id = R.string.login_login),
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = Icons.Default.AccountBox)
+                leadingIcon = Icons.Default.AccountBox
+            )
 
             LoginInput(
                 // Configura com o valor de senha do estado da tela
@@ -284,7 +286,9 @@ private fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                leadingIcon = Icons.Default.VpnKey)
+                leadingIcon = Icons.Default.VpnKey,
+                isPasswordInput = true
+            )
         }
 
         CheckableRow(
@@ -361,8 +365,15 @@ fun LoginInput(
     label: String,
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector = Icons.Default.AccountBox,
-    contentColor: Color = Color.White
+    contentColor: Color = Color.White,
+    isPasswordInput: Boolean = false
 ){
+    val visualTransformation = if (isPasswordInput) {
+        PasswordVisualTransformation()
+    } else {
+        VisualTransformation.None
+    }
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
