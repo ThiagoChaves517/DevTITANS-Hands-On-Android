@@ -51,6 +51,7 @@ proguard/
 /*/*/production
 captures/
 .navigation/
+.idea/
 *.ipr
 *~
 *.swp
