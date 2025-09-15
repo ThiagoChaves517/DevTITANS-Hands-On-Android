@@ -16,10 +16,8 @@ package com.example.plaintext.ui.viewmodel
 //  - login: String - Nome de usuário
 //  - password: String - Senha do usuário
 //  - isChecked: Boolean - Indica se o usuário marcou a caixa de seleção
-//  - showError: Boolean - Indica se o usuário deve ver uma mensagem de erro
 data class LoginUiState (
     val login: String = "",
     val password: String = "",
     val isChecked: Boolean = false,
-//    val showError: Boolean = false
 )

@@ -220,7 +220,6 @@ fun PreviewUILogin() {
 // Tela de login
 private fun LoginScreen(
     modifier: Modifier,
-//    viewModel: LoginViewModel = viewModel()
     viewModel: LoginViewModel = hiltViewModel() // Usando o Hilt
 ){
     // Recupera o estado da tela de login a partir do ViewModel.
@@ -240,7 +239,7 @@ private fun LoginScreen(
     ){
         /*
           Lógica descartada:
-          Código era usado para aplicar a criação e gerenciamento de estados da
+          Código foi implentado para aplicar a criação e gerenciamento de estados da
           tela de login (Composable) de forma local (dentro de função).
           Eram estados criados com remeber que poderiam ser perdidos quando
           a tela era rotacionada.
@@ -248,7 +247,6 @@ private fun LoginScreen(
 //        var login by remember { mutableStateOf("") }
 //        var password by remember { mutableStateOf("") }
 //        var isChecked by remember { mutableStateOf(false) }
-//        var showError by remember { mutableStateOf(false) }
 
         CustomImageTextRow(
             contentDescription = "cabeça de robô Android",
