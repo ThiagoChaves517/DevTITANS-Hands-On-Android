@@ -73,6 +73,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.plaintext.R
 import com.example.plaintext.ui.theme.PlainTextTheme
+import com.example.plaintext.ui.viewmodel.LoginViewModel
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
 data class LoginState(
@@ -197,7 +198,7 @@ class Login : ComponentActivity() {
 @Preview(name = "Modo Retrato", widthDp = 320)
 @Preview(name = "Modo Paisagem", widthDp = 640)
 @Composable
-fun PreviewUI() {
+fun PreviewUILogin() {
     PlainTextTheme {
         PlainTextTheme {
             Scaffold (
@@ -207,7 +208,9 @@ fun PreviewUI() {
                 containerColor = colorResource(id = R.color.black),
                 contentColor = colorResource(id = R.color.white)
             ) {
-                LoginScreen(modifier = Modifier.padding(it))
+                LoginScreen(
+                    modifier = Modifier.padding(it),
+                    viewModel = LoginViewModel())
             }
         }
     }
@@ -215,8 +218,14 @@ fun PreviewUI() {
 
 @Composable
 // Tela de login
-private fun LoginScreen(modifier: Modifier){
-
+private fun LoginScreen(
+    modifier: Modifier,
+//    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = hiltViewModel() // Usando o Hilt
+){
+    // Recupera o estado da tela de login a partir do ViewModel.
+    // Isso permiti que IU possa se recompor automaticamente quando o estado do ViewModel muda.
+    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
     Column(
@@ -229,10 +238,17 @@ private fun LoginScreen(modifier: Modifier){
             .verticalScroll(scrollState)
             .padding(8.dp)
     ){
-        var login by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var isChecked by remember { mutableStateOf(false) }
-        isChecked = false
+        /*
+          Lógica descartada:
+          Código era usado para aplicar a criação e gerenciamento de estados da
+          tela de login (Composable) de forma local (dentro de função).
+          Eram estados criados com remeber que poderiam ser perdidos quando
+          a tela era rotacionada.
+        */
+//        var login by remember { mutableStateOf("") }
+//        var password by remember { mutableStateOf("") }
+//        var isChecked by remember { mutableStateOf(false) }
+//        var showError by remember { mutableStateOf(false) }
 
         CustomImageTextRow(
             contentDescription = "cabeça de robô Android",
@@ -253,15 +269,19 @@ private fun LoginScreen(modifier: Modifier){
                 .fillMaxWidth()
         ){
             LoginInput(
-                value = login,
-                onValueChange = { login = it },
+                // Configura com o valor de login do estado da tela
+                value = loginUiState.login,
+                // Utiliza a chamada da função do ViewModel para atualizar o estado
+                onValueChange = viewModel::updateLogin,
                 label = stringResource(id = R.string.login_login),
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = Icons.Default.AccountBox)
 
             LoginInput(
-                value = password,
-                onValueChange = { password = it },
+                // Configura com o valor de senha do estado da tela
+                value = loginUiState.password,
+                // Utiliza a chamada da função do ViewModel para atualizar o estado
+                onValueChange = viewModel::updatePassword,
                 label = stringResource(id = R.string.login_senha),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -270,8 +290,9 @@ private fun LoginScreen(modifier: Modifier){
         }
 
         CheckableRow(
-            checked = isChecked,
-            onCheckedChange = { isChecked = it },
+            // Configura com o valor de checked do estado da tela
+            checked = loginUiState.isChecked,
+            onCheckedChange = viewModel::updateIsChecked,
             text = stringResource(id = R.string.login_isCheck),
             modifier = Modifier
                 .fillMaxWidth()

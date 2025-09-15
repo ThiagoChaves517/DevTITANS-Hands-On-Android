@@ -78,6 +78,7 @@ obj/
 
 # User-specific configurations
 .idea/AndroidProjectSystem.xml
+.idea/deploymentTargetSelector.xml
 .idea/caches/
 .idea/libraries/
 .idea/shelf/
@@ -102,6 +103,7 @@ obj/
 .idea/gradle.xml
 .idea/jarRepositories.xml
 .idea/navEditor.xml
+.idea/dictionaries/
 
 # Legacy Eclipse project files
 .classpath
