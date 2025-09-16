@@ -118,8 +118,7 @@ fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun TopBarComponent(
-    navigateToSettings: (() -> Unit?)? = null,
-//    navigateToSensores: (() -> Unit?)? = null,
+    navigateToSettings: (() -> Unit?)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     val shouldShowDialog = remember { mutableStateOf(false) }
@@ -131,7 +130,7 @@ fun TopBarComponent(
     TopAppBar(
         title = { Text("PlainText", color = colorResource(id = R.color.white)) },
         actions = {
-//            if (navigateToSettings != null && navigateToSensores != null) {
+
             if (navigateToSettings != null) {
                 IconButton(onClick = { expanded = true }) {
                     Icon(
@@ -180,7 +179,10 @@ class Login : ComponentActivity() {
             PlainTextTheme {
                 Scaffold(
                     topBar = {
-                        TopBarComponent()
+                        TopBarComponent(
+                            navigateToSettings = {
+                            }
+                        )
                     },
                     containerColor = colorResource(id = R.color.black),
                     contentColor = colorResource(id = R.color.white)
@@ -188,7 +190,11 @@ class Login : ComponentActivity() {
                     // Modifier.padding(it) é usado para adicionar padding ao conteúdo da tela
                     // para os casos em que a barra de navegação é exibida no Scaffold.
                     // Isso é útil para evitar que o conteúdo seja sobreposto pela barra de navegação.
-                    LoginScreen(modifier = Modifier.padding(it))
+                    LoginScreen(
+                        modifier = Modifier.padding(it),
+                        navigateToSettings = {},
+                        navigateToList = {}
+                    )
                 }
             }
         }
@@ -211,7 +217,10 @@ fun PreviewUILogin() {
             ) {
                 LoginScreen(
                     modifier = Modifier.padding(it),
-                    viewModel = LoginViewModel())
+                    navigateToSettings = {},
+                    navigateToList = {},
+                    viewModel = viewModel()
+                )
             }
         }
     }
@@ -221,6 +230,8 @@ fun PreviewUILogin() {
 // Tela de login
 private fun LoginScreen(
     modifier: Modifier,
+    navigateToSettings: () -> Unit,
+    navigateToList: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel() // Usando o Hilt
 ){
     // Recupera o estado da tela de login a partir do ViewModel.

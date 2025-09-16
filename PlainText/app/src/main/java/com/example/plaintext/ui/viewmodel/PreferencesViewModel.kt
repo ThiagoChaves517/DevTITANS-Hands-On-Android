@@ -5,36 +5,40 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
-data class PreferencesState(
-    var login: String,
-    var password: String,
-    var preencher: Boolean
-)
-
+// Classe de estado para a tela de configurações.
+// Responsável por armazenar os dados da tela de configurações.
+//
+// Atributos:
+//  - preferencesState: PreferencesState - Armazena o estado da tela de configurações.
+//
+// Métodos:
+//  - updateLogin(login: String): Atualiza o login de usuário.
+//  - updatePassword(password: String): Atualiza a senha do usuário.
+//  - updatePreencher(preencher: Boolean): Atualiza o estado que habilita o
+//     salvamento das credencias de login.
+//  - checkCredentials(login: String, password: String): Verifica se as credenciais são válidas.
+//
+// Hilt: Usado para injetar as dependências necessárias no App.
 @HiltViewModel
-class PreferencesViewModel @Inject constructor(
-    handle: SavedStateHandle,
+open class PreferencesViewModel @Inject constructor(
+    handle: SavedStateHandle
 ) : ViewModel() {
     var preferencesState by mutableStateOf(PreferencesState(login = "devtitans", password = "123", preencher = true))
         private set
 
     fun updateLogin(login: String) {
-
+        preferencesState = preferencesState.copy(login = login)
     }
 
     fun updatePassword(password: String) {
-
+        preferencesState = preferencesState.copy(password = password)
     }
 
     fun updatePreencher(preencher: Boolean) {
-
+        preferencesState = preferencesState.copy(preencher = preencher)
     }
 
     fun checkCredentials(login: String, password: String): Boolean{
