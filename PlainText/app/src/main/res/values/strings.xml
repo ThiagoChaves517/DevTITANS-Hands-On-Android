@@ -16,6 +16,6 @@
     <string name="preferences_input_password_summary">Configure a senha para entrar no sistema:</string>
     <string name="preferences_item_title">Lembrar Login e Senha</string>
     <string name="preferences_item_summary">Preenchimento automático do login</string>
-
-
+    <string name="editlist_adding_new_password">Adicionar nova senha</string>
+    <string name="editlist_editing_password">Editar senha</string>
 </resources>
