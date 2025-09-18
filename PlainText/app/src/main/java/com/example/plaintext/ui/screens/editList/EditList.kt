@@ -75,8 +75,8 @@ fun EditList(
         topBar = {
             TopBarComponent()
         },
-        containerColor = colorResource(id = R.color.black),
-        contentColor = colorResource(id = R.color.white)
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
     ) { padding ->
         Column(
             modifier = Modifier
@@ -112,7 +112,6 @@ fun EditList(
                     onValueChange = { name = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
                 )
                 EditInput(
                     "Usuário",
@@ -120,7 +119,6 @@ fun EditList(
                     onValueChange = { login = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
                 )
                 EditInput(
                     "Senha",
@@ -128,7 +126,6 @@ fun EditList(
                     onValueChange = { password = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
                 )
                 EditInput(
                     "Notas",
@@ -136,7 +133,6 @@ fun EditList(
                     onValueChange = { notes = it },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp)
                 )
             }
 
@@ -241,8 +237,8 @@ fun EditPasswordPreview() {
                 topBar = {
                     TopBarComponent()
                 },
-                containerColor = colorResource(id = R.color.black),
-                contentColor = colorResource(id = R.color.white)
+                containerColor = colorResource(id = R.color.background_container),
+                contentColor = colorResource(id = R.color.font_screen)
             ) {
                 EditPasswordScreen(
                     modifier = Modifier.padding(it)
@@ -262,8 +258,8 @@ fun AddNewPasswordPreview() {
                 topBar = {
                     TopBarComponent()
                 },
-                containerColor = colorResource(id = R.color.black),
-                contentColor = colorResource(id = R.color.white)
+                containerColor = colorResource(id = R.color.background_container),
+                contentColor = colorResource(id = R.color.font_screen)
             ) {
                 AddNewPasswordScreen(
                     modifier = Modifier.padding(it)
@@ -307,7 +303,7 @@ fun TopBarComponent(
     }
 
     TopAppBar(
-        title = { Text("PlainText", color = colorResource(id = R.color.white)) },
+        title = { Text("PlainText", color = colorResource(id = R.color.font_screen)) },
         actions = {
 
             if (navigateToSettings != null) {
@@ -315,13 +311,13 @@ fun TopBarComponent(
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = "Menu",
-                        tint = colorResource(id = R.color.white)
+                        tint = colorResource(id = R.color.font_screen)
                     )
                 }
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.background(colorResource(id = R.color.black))
+                    modifier = Modifier.background(colorResource(id = R.color.background_container))
                 ) {
                     DropdownMenuItem(
                         text = { Text("Configurações") },
@@ -345,7 +341,7 @@ fun TopBarComponent(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(id = R.color.black)
+            containerColor = colorResource(id = R.color.background_container)
         )
     )
 }
