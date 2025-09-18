@@ -32,6 +32,15 @@ fun PlainTextApp(
         startDestination = Screen.Hello("DevTITANS"),
     )
     {
+
+
+        composable<Screen.List>{
+            ListCompose(
+                onAddPassword = { appState.navController.navigate(Screen.EditList(null)) }
+            )
+        }
+
+
         composable<Screen.Hello>{
             var args = it.toRoute<Screen.Hello>()
             Hello_screen(args)

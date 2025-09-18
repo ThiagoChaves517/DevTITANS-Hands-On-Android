@@ -51,7 +51,57 @@ fun EditList(
     navigateBack: () -> Unit,
     savePassword: (password: PasswordInfo) -> Unit
 ) {
+    val state = rememberSaveable {
+        EditListState(
+            nomeState = mutableStateOf(args.passwordInfo?.name ?: ""),
+            usuarioState = mutableStateOf(args.passwordInfo?.login ?: ""),
+            senhaState = mutableStateOf(args.passwordInfo?.password ?: ""),
+            notasState = mutableStateOf(args.passwordInfo?.notes ?: "")
+        )
+    }
 
+    Scaffold(
+        topBar = { TopBarComponent(text = "Editar Senha", onClick = { navigateBack() }) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            EditInput(textInputLabel = "Nome", textInputState = state.nomeState)
+            EditInput(textInputLabel = "Usuário", textInputState = state.usuarioState)
+            EditInput(textInputLabel = "Senha", textInputState = state.senhaState)
+            EditInput(textInputLabel = "Notas", textInputState = state.notasState, textInputHeight = 150)
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = { navigateBack() }) {
+                    Text("Cancelar")
+                }
+                Spacer(modifier = Modifier.width(30.dp))
+                Button(
+                    onClick = {
+                        val newPasswordInfo = PasswordInfo(
+                            id = args.passwordInfo?.id ?: 0,
+                            name = state.nomeState.value,
+                            login = state.usuarioState.value,
+                            password = state.senhaState.value,
+                            notes = state.notasState.value
+                        )
+                        savePassword(newPasswordInfo)
+                    }
+                ) {
+                    Text("Salvar")
+                }
+            }
+        }
+    }
 }
 
 
