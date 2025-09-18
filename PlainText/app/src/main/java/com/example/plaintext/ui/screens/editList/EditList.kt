@@ -35,12 +35,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
+import com.example.plaintext.data.model.Password
 import com.example.plaintext.data.model.PasswordInfo
+import com.example.plaintext.data.repository.PasswordDBStore
 import com.example.plaintext.ui.screens.Screen
 import com.example.plaintext.ui.screens.login.ButtonWithIcons
 import com.example.plaintext.ui.screens.login.TopBarComponent
 import com.example.plaintext.ui.theme.PlainTextTheme
 import com.example.plaintext.ui.viewmodel.EditListViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun EditList(
@@ -50,6 +54,11 @@ fun EditList(
 ) {
     val uiState by viewModel.uiState
     val scrollState = rememberScrollState()
+
+    // *** BUG FIX: This loads the password data into the ViewModel when the screen is shown ***
+    LaunchedEffect(key1 = args.password) {
+        viewModel.setPassword(args.password)
+    }
 
     LaunchedEffect(uiState.isPasswordSaved) {
         if (uiState.isPasswordSaved) {
@@ -205,30 +214,49 @@ fun CustomImageTextRow(
     }
 }
 
+// --- PREVIEW FIXES ---
+
+/**
+ * A fake implementation of the PasswordDBStore for previewing purposes.
+ */
+private class FakePasswordDBStore : PasswordDBStore {
+    override fun getList(): Flow<List<Password>> = flowOf(emptyList())
+    override suspend fun add(password: Password): Long = 0
+    override suspend fun update(password: Password) {}
+    override fun get(id: Int): Password? = null
+    override suspend fun save(passwordInfo: PasswordInfo) {}
+    override suspend fun isEmpty(): Flow<Boolean> = flowOf(true)
+}
+
 @Composable
-fun EditPasswordScreen(
-    modifier: Modifier
+private fun EditPasswordScreen(
+    modifier: Modifier,
+    viewModel: EditListViewModel
 ) {
     EditList(
         Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
-        navigateBack = {}
+        navigateBack = {},
+        viewModel = viewModel
     )
 }
 
 @Composable
-fun AddNewPasswordScreen(
-    modifier: Modifier
+private fun AddNewPasswordScreen(
+    modifier: Modifier,
+    viewModel: EditListViewModel
 ) {
     EditList(
         Screen.EditList(PasswordInfo(0, "", "", "", "")),
-        navigateBack = {}
+        navigateBack = {},
+        viewModel = viewModel
     )
 }
 
 @Preview(name = "Modo Retrato", widthDp = 320)
 @Preview(name = "Modo Paisagem", widthDp = 640)
 @Composable
-fun EditPasswordPreview() {
+private fun EditPasswordPreview() {
+    val fakeViewModel = EditListViewModel(FakePasswordDBStore())
     PlainTextTheme {
         Scaffold (
             topBar = {
@@ -238,7 +266,8 @@ fun EditPasswordPreview() {
             contentColor = colorResource(id = R.color.white)
         ) {
             EditPasswordScreen(
-                modifier = Modifier.padding(it)
+                modifier = Modifier.padding(it),
+                viewModel = fakeViewModel
             )
         }
     }
@@ -247,7 +276,8 @@ fun EditPasswordPreview() {
 @Preview(name = "Modo Retrato", widthDp = 320)
 @Preview(name = "Modo Paisagem", widthDp = 640)
 @Composable
-fun AddNewPasswordPreview() {
+private fun AddNewPasswordPreview() {
+    val fakeViewModel = EditListViewModel(FakePasswordDBStore())
     PlainTextTheme {
         Scaffold (
             topBar = {
@@ -257,7 +287,8 @@ fun AddNewPasswordPreview() {
             contentColor = colorResource(id = R.color.white)
         ) {
             AddNewPasswordScreen(
-                modifier = Modifier.padding(it)
+                modifier = Modifier.padding(it),
+                viewModel = fakeViewModel
             )
         }
     }

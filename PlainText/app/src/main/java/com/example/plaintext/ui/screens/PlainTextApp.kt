@@ -48,8 +48,7 @@ fun PlainTextApp(
             val args = it.toRoute<Screen.EditList>()
             EditList(
                 args,
-                navigateBack = {},
-                savePassword = { password -> Unit }
+                navigateBack = {}
             )
         }
     }
