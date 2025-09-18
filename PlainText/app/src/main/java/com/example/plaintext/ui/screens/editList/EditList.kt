@@ -6,24 +6,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,26 +33,143 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
-import com.example.plaintext.ui.screens.login.CustomImageTextRow
+import com.example.plaintext.ui.screens.login.ButtonWithIcons
 import com.example.plaintext.ui.screens.login.TopBarComponent
+import com.example.plaintext.ui.theme.PlainTextTheme
+import com.example.plaintext.ui.viewmodel.EditListViewModel
 
-data class EditListState(
-    val nomeState: MutableState<String>,
-    val usuarioState: MutableState<String>,
-    val senhaState: MutableState<String>,
-    val notasState: MutableState<String>,
-)
+@Composable
+fun EditList(
+    args: Screen.EditList,
+    navigateBack: () -> Unit,
+    viewModel: EditListViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState
+    val scrollState = rememberScrollState()
 
-fun isPasswordEmpty(password: PasswordInfo): Boolean {
-    return password.name.isEmpty() && password.login.isEmpty() && password.password.isEmpty() && password.notes.isEmpty()
+    LaunchedEffect(uiState.isPasswordSaved) {
+        if (uiState.isPasswordSaved) {
+            navigateBack()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopBarComponent()
+        },
+        containerColor = colorResource(id = R.color.black),
+        contentColor = colorResource(id = R.color.white)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(8.dp)
+        ) {
+            CustomImageTextRow(
+                contentDescription = "cabeça de robô Android",
+                textResId = R.string.login_image_text
+            )
+
+            Text(
+                text = stringResource(
+                    id = if (uiState.isNewPassword) R.string.editlist_adding_new_password
+                    else R.string.editlist_editing_password
+                ).uppercase(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp, bottom = 5.dp),
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold
+            )
+
+            EditInput(
+                modifier = Modifier.fillMaxWidth(),
+                textInputLabel = "Nome",
+                value = uiState.name,
+                onValueChange = { viewModel.updateName(it) }
+            )
+            EditInput(
+                modifier = Modifier.fillMaxWidth(),
+                textInputLabel = "Usuário",
+                value = uiState.login,
+                onValueChange = { viewModel.updateLogin(it) }
+            )
+            EditInput(
+                modifier = Modifier.fillMaxWidth(),
+                textInputLabel = "Senha",
+                value = uiState.password,
+                onValueChange = { viewModel.updatePassword(it) }
+            )
+            EditInput(
+                modifier = Modifier.fillMaxWidth(),
+                textInputLabel = "Notas",
+                value = uiState.notes,
+                onValueChange = { viewModel.updateNotes(it) }
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                ButtonWithIcons(
+                    modifier = Modifier.fillMaxWidth(0.90f),
+                    onClick = { viewModel.savePassword() },
+                    text = stringResource(id = R.string.save_button),
+                    leadingIcon = Icons.AutoMirrored.Filled.Login,
+                    trailingIcon = Icons.AutoMirrored.Filled.Login,
+                    trailingIconRotation = 180f
+                )
+            }
+        }
+    }
 }
 
 @Composable
-// Composable que representa uma linha com uma imagem e um texto
+fun EditInput(
+    modifier: Modifier,
+    textInputLabel: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    textInputHeight: Int = 60,
+    contentColor: Color = Color.White,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(textInputHeight.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(textInputLabel) },
+            modifier = Modifier
+                .height(textInputHeight.dp)
+                .fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = contentColor,
+                unfocusedTextColor = contentColor,
+                focusedLeadingIconColor = contentColor,
+                unfocusedLeadingIconColor = contentColor,
+                focusedLabelColor = contentColor,
+                unfocusedLabelColor = contentColor,
+                focusedBorderColor = contentColor,
+                unfocusedBorderColor = contentColor
+            )
+        )
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
 fun CustomImageTextRow(
     backgroundColor: Color = colorResource(id = R.color.login_row_background),
     imageResId: Int = R.drawable.ic_launcher_foreground,
@@ -91,104 +206,59 @@ fun CustomImageTextRow(
 }
 
 @Composable
-fun EditList(
-    args: Screen.EditList,
-    navigateBack: () -> Unit,
-    savePassword: (password: PasswordInfo) -> Unit
+fun EditPasswordScreen(
+    modifier: Modifier
 ) {
-
-}
-
-@Composable
-fun EditInput(
-    textInputLabel: String,
-    textInputState: MutableState<String> = mutableStateOf(""),
-    textInputHeight: Int = 60
-) {
-    val padding: Int = 30
-
-    var textState by rememberSaveable { textInputState }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(textInputHeight.dp)
-            .padding(horizontal = padding.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        OutlinedTextField(
-            value = textState,
-            onValueChange = { textState = it },
-            label = { Text(textInputLabel) },
-            modifier = Modifier
-                .height(textInputHeight.dp)
-                .fillMaxWidth()
-        )
-
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-}
-
-@Preview(showBackground = true)
-@Composable
-fun EditListPreview() {
     EditList(
         Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
-        navigateBack = {},
-        savePassword = {}
+        navigateBack = {}
     )
+}
 
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CustomImageTextRow(
-            contentDescription = "cabeça de robô Android",
-            textResId = R.string.login_image_text
-        )
+@Composable
+fun AddNewPasswordScreen(
+    modifier: Modifier
+) {
+    EditList(
+        Screen.EditList(PasswordInfo(0, "", "", "", "")),
+        navigateBack = {}
+    )
+}
 
-        Text(
-            text = stringResource(id = R.string.editlist_editing_password).uppercase(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 5.dp),
-            textAlign = TextAlign.Start,
-            fontWeight = FontWeight.Bold
-        )
-
-        EditInput("Nome")
-        EditInput("Usuário")
-        EditInput("Senha")
-        EditInput("Notas")
+@Preview(name = "Modo Retrato", widthDp = 320)
+@Preview(name = "Modo Paisagem", widthDp = 640)
+@Composable
+fun EditPasswordPreview() {
+    PlainTextTheme {
+        Scaffold (
+            topBar = {
+                TopBarComponent()
+            },
+            containerColor = colorResource(id = R.color.black),
+            contentColor = colorResource(id = R.color.white)
+        ) {
+            EditPasswordScreen(
+                modifier = Modifier.padding(it)
+            )
+        }
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Modo Retrato", widthDp = 320)
+@Preview(name = "Modo Paisagem", widthDp = 640)
 @Composable
-fun EditInputPreview() {
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CustomImageTextRow(
-            contentDescription = "cabeça de robô Android",
-            textResId = R.string.login_image_text
-        )
-
-        Text(
-            text = stringResource(id = R.string.editlist_adding_new_password).uppercase(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 5.dp),
-            textAlign = TextAlign.Start,
-            fontWeight = FontWeight.Bold
-        )
-
-        EditInput("Nome")
-        EditInput("Usuário")
-        EditInput("Senha")
-        EditInput("Notas")
+fun AddNewPasswordPreview() {
+    PlainTextTheme {
+        Scaffold (
+            topBar = {
+                TopBarComponent()
+            },
+            containerColor = colorResource(id = R.color.black),
+            contentColor = colorResource(id = R.color.white)
+        ) {
+            AddNewPasswordScreen(
+                modifier = Modifier.padding(it)
+            )
+        }
     }
 }

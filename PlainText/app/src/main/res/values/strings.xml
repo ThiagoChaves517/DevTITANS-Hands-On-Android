@@ -18,4 +18,5 @@
     <string name="preferences_item_summary">Preenchimento automático do login</string>
     <string name="editlist_adding_new_password">Adicionar nova senha</string>
     <string name="editlist_editing_password">Editar senha</string>
+    <string name="save_button">Salvar</string>
 </resources>

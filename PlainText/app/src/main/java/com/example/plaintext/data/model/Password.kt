@@ -34,6 +34,6 @@ data class PasswordInfo(
     val login: String,
     val password: String,
     val notes: String,
-) : Parcelable {
-    fun PasswordInfo.toPassword() = Password(id, name, login, password, notes)
-}
+) : Parcelable
+
+fun PasswordInfo.toPassword() = Password(id, name, login, password, notes)
