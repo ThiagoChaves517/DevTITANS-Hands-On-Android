@@ -63,13 +63,113 @@ fun EditList(
     navigateBack: () -> Unit,
     savePassword: (password: PasswordInfo) -> Unit
 ) {
+    val isNewPassword = args.password.id == 0
+    val scrollState = rememberScrollState()
 
+    var name by remember { mutableStateOf(args.password.name) }
+    var login by remember { mutableStateOf(args.password.login) }
+    var password by remember { mutableStateOf(args.password.password) }
+    var notes by remember { mutableStateOf(args.password.notes) }
+
+    Scaffold(
+        topBar = {
+            TopBarComponent()
+        },
+        containerColor = colorResource(id = R.color.black),
+        contentColor = colorResource(id = R.color.white)
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(8.dp)
+        ) {
+            CustomImageTextRow(
+                contentDescription = "cabeça de robô Android",
+                textResId = R.string.login_image_text
+            )
+
+            Text(
+                text = stringResource(
+                    id = if (isNewPassword) R.string.editlist_adding_new_password
+                    else R.string.editlist_editing_password
+                ).uppercase(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp, bottom = 5.dp),
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                EditInput(
+                    "Nome",
+                    textInputState = remember { mutableStateOf(name) },
+                    onValueChange = { name = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+                EditInput(
+                    "Usuário",
+                    textInputState = remember { mutableStateOf(login) },
+                    onValueChange = { login = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+                EditInput(
+                    "Senha",
+                    textInputState = remember { mutableStateOf(password) },
+                    onValueChange = { password = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+                EditInput(
+                    "Notas",
+                    textInputState = remember { mutableStateOf(notes) },
+                    onValueChange = { notes = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                SaveButton(
+                    modifier = Modifier.fillMaxWidth(0.90f),
+                    onClick = {
+                        val updatedPassword = args.password.copy(
+                            name = name,
+                            login = login,
+                            password = password,
+                            notes = notes
+                        )
+                        savePassword(updatedPassword)
+                        navigateBack()
+                    },
+                    text = stringResource(id = R.string.save_button)
+                )
+            }
+        }
+    }
 }
 
 @Composable
 fun EditInput(
     textInputLabel: String,
     textInputState: MutableState<String> = mutableStateOf(""),
+    onValueChange: (String) -> Unit,
     textInputHeight: Int = 60,
     modifier: Modifier,
     contentColor: Color = Color.White
@@ -87,7 +187,10 @@ fun EditInput(
     ) {
         OutlinedTextField(
             value = textState,
-            onValueChange = { textState = it },
+            onValueChange = {
+                textState = it
+                onValueChange(it)
+            },
             label = { Text(textInputLabel) },
             modifier = modifier,
             colors = OutlinedTextFieldDefaults.colors(
@@ -110,130 +213,22 @@ fun EditInput(
 fun EditPasswordScreen(
     modifier: Modifier,
 ) {
-    val scrollState = rememberScrollState()
-
     EditList(
         Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
         navigateBack = {},
         savePassword = {}
     )
-
-    Column (
-        modifier = modifier.fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(8.dp)
-    ) {
-        CustomImageTextRow(
-            contentDescription = "cabeça de robô Android",
-            textResId = R.string.login_image_text
-        )
-
-        Text(
-            text = stringResource(id = R.string.editlist_editing_password).uppercase(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 5.dp),
-            textAlign = TextAlign.Start,
-            fontWeight = FontWeight.Bold
-        )
-
-        Column (
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            EditInput("Nome",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Usuário",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Senha",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Notas",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-        }
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement  = Arrangement.Center
-        ){
-            SaveButton(
-                modifier = Modifier.fillMaxWidth(0.90f),
-                onClick = { /*TODO*/ },
-                text = stringResource(id = R.string.save_button)
-            )
-        }
-    }
 }
 
 @Composable
 fun AddNewPasswordScreen(
     modifier: Modifier,
 ) {
-    val scrollState = rememberScrollState()
-
-    Column (
-        modifier = modifier.fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(8.dp)
-    ) {
-        CustomImageTextRow(
-            contentDescription = "cabeça de robô Android",
-            textResId = R.string.login_image_text
-        )
-
-        Text(
-            text = stringResource(id = R.string.editlist_adding_new_password).uppercase(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 5.dp),
-            textAlign = TextAlign.Start,
-            fontWeight = FontWeight.Bold
-        )
-
-        Column (
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            EditInput("Nome",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Usuário",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Senha",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-            EditInput("Notas",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp))
-        }
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement  = Arrangement.Center
-        ){
-            SaveButton(
-                modifier = Modifier.fillMaxWidth(0.90f),
-                onClick = { /*TODO*/ },
-                text = stringResource(id = R.string.save_button)
-            )
-        }
-    }
+    EditList(
+        Screen.EditList(PasswordInfo(0, "", "", "", "")),
+        navigateBack = {},
+        savePassword = {}
+    )
 }
 
 @Preview(name = "Modo Retrato", widthDp = 320)
@@ -242,7 +237,7 @@ fun AddNewPasswordScreen(
 fun EditPasswordPreview() {
     PlainTextTheme {
         PlainTextTheme {
-            Scaffold (
+            Scaffold(
                 topBar = {
                     TopBarComponent()
                 },
@@ -263,7 +258,7 @@ fun EditPasswordPreview() {
 fun AddNewPasswordPreview() {
     PlainTextTheme {
         PlainTextTheme {
-            Scaffold (
+            Scaffold(
                 topBar = {
                     TopBarComponent()
                 },
@@ -398,7 +393,7 @@ fun SaveButton(
     onClick: () -> Unit,
     text: String,
     modifier: Modifier = Modifier,
-    buttonColor: Color = colorResource(id =  R.color.login_button)
+    buttonColor: Color = colorResource(id = R.color.login_button)
 ) {
     Button(
         onClick = onClick,
