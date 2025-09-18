@@ -8,6 +8,8 @@
     <string name="login_isCheck">Salvar as informações de login</string>
     <string name="login_button">Entrar</string>
     <string name="login_image_text">\"The most \nsecure password \nmanager\"</string>"
+    <string name="login_alertDialog_title">Sobre o PlainText</string>
+    <string name="login_alertDialog_text">Este aplicativo foi criado para gerenciar senhas e informações de forma segura.</string>
     <string name="preferences_input_login_title">Configurar Login</string>
     <string name="preferences_input_login_label">Login</string>
     <string name="preferences_input_login_summary">Configure o login da tela inicial</string>

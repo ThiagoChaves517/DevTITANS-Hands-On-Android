@@ -1,5 +1,6 @@
 package com.example.plaintext.ui.screens.preferences
 
+import android.annotation.SuppressLint
 import com.example.plaintext.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,15 +26,21 @@ import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
 @Composable
 fun SettingsScreen(
-    navController: NavHostController?,
+//    navController: NavHostController?,
+    navigateToLogin: () -> Unit,
     viewModel: PreferencesViewModel = hiltViewModel()
 ){
     Scaffold(
         topBar = {
-            TopBarComponent()
+            TopBarComponent(
+//                navigateToSettings = { navController?.navigateUp() },
+                navigateToSettings = navigateToLogin,
+                showAboutDialog = {},
+                isOnPreferencesScreen = true
+            )
         },
-        containerColor = colorResource(id = R.color.black),
-        contentColor = colorResource(id = R.color.white)
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
     ){ padding ->
         SettingsContent(
             modifier = Modifier.padding(padding),
@@ -94,10 +101,10 @@ fun SettingsContent(
                     },
                     colors = SwitchDefaults.colors(
                         checkedTrackColor = colorResource(id = R.color.login_button),
-                        checkedThumbColor = colorResource(id = R.color.white),
+                        checkedThumbColor = colorResource(id = R.color.font_screen),
                         uncheckedTrackColor = colorResource(id = R.color.login_button),
-                        uncheckedThumbColor = colorResource(id = R.color.black),
-                        uncheckedBorderColor = colorResource(id = R.color.white),
+                        uncheckedThumbColor = colorResource(id = R.color.background_container),
+                        uncheckedBorderColor = colorResource(id = R.color.font_screen),
                     )
                 )
             }
@@ -119,11 +126,12 @@ class FakePreferencesViewModel() : PreferencesViewModel(
     )
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
     SettingsScreen(
-        navController = null,
+        navigateToLogin = {},
         viewModel = FakePreferencesViewModel()
     )
 }
