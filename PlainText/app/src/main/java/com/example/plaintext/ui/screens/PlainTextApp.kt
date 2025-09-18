@@ -40,7 +40,7 @@ fun PlainTextApp(
             EditList(
                 args,
                 navigateBack = {},
-                savePassword = { password -> Unit }
+                savePassword = {}
             )
         }
         // Construtor de rotas para a tela de configurações
