@@ -15,16 +15,46 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
+<<<<<<< HEAD
+=======
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.VpnKey
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+>>>>>>> 36d9457 (New Solutions)
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+<<<<<<< HEAD
+=======
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+>>>>>>> 36d9457 (New Solutions)
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+<<<<<<< HEAD
+=======
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+>>>>>>> 36d9457 (New Solutions)
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,12 +69,17 @@ import com.example.plaintext.data.model.Password
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.data.repository.PasswordDBStore
 import com.example.plaintext.ui.screens.Screen
+<<<<<<< HEAD
 import com.example.plaintext.ui.screens.login.ButtonWithIcons
 import com.example.plaintext.ui.screens.login.TopBarComponent
 import com.example.plaintext.ui.theme.PlainTextTheme
 import com.example.plaintext.ui.viewmodel.EditListViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+=======
+import com.example.plaintext.ui.screens.login.LoginInput
+import com.example.plaintext.ui.theme.PlainTextTheme
+>>>>>>> 36d9457 (New Solutions)
 
 @Composable
 fun EditList(
@@ -179,6 +214,308 @@ fun EditInput(
 }
 
 @Composable
+<<<<<<< HEAD
+=======
+fun EditList(
+    args: Screen.EditList,
+    navigateBack: () -> Unit,
+    savePassword: (password: PasswordInfo) -> Unit
+) {
+
+}
+
+@Composable
+fun EditInput(
+    textInputLabel: String,
+    textInputState: MutableState<String> = mutableStateOf(""),
+    textInputHeight: Int = 60,
+    modifier: Modifier,
+    contentColor: Color = Color.White
+) {
+    val padding: Int = 30
+
+    var textState by rememberSaveable { textInputState }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(textInputHeight.dp)
+            .padding(horizontal = padding.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        OutlinedTextField(
+            value = textState,
+            onValueChange = { textState = it },
+            label = { Text(textInputLabel) },
+            modifier = modifier,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = contentColor,
+                unfocusedTextColor = contentColor,
+                focusedLeadingIconColor = contentColor,
+                unfocusedLeadingIconColor = contentColor,
+                focusedLabelColor = contentColor,
+                unfocusedLabelColor = contentColor,
+                focusedBorderColor = contentColor,
+                unfocusedBorderColor = contentColor
+            )
+        )
+
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+fun EditPasswordScreen(
+    modifier: Modifier,
+) {
+    val scrollState = rememberScrollState()
+
+    EditList(
+        Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
+        navigateBack = {},
+        savePassword = {}
+    )
+
+    Column (
+        modifier = modifier.fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(8.dp)
+    ) {
+        CustomImageTextRow(
+            contentDescription = "cabeça de robô Android",
+            textResId = R.string.login_image_text
+        )
+
+        Text(
+            text = stringResource(id = R.string.editlist_editing_password).uppercase(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp, bottom = 5.dp),
+            textAlign = TextAlign.Start,
+            fontWeight = FontWeight.Bold
+        )
+
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            EditInput("Nome",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Usuário",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Senha",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Notas",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+        }
+
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement  = Arrangement.Center
+        ){
+            SaveButton(
+                modifier = Modifier.fillMaxWidth(0.90f),
+                onClick = { /*TODO*/ },
+                text = stringResource(id = R.string.save_button)
+            )
+        }
+    }
+}
+
+@Composable
+fun AddNewPasswordScreen(
+    modifier: Modifier,
+) {
+    val scrollState = rememberScrollState()
+
+    Column (
+        modifier = modifier.fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(8.dp)
+    ) {
+        CustomImageTextRow(
+            contentDescription = "cabeça de robô Android",
+            textResId = R.string.login_image_text
+        )
+
+        Text(
+            text = stringResource(id = R.string.editlist_adding_new_password).uppercase(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp, bottom = 5.dp),
+            textAlign = TextAlign.Start,
+            fontWeight = FontWeight.Bold
+        )
+
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            EditInput("Nome",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Usuário",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Senha",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+            EditInput("Notas",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp))
+        }
+
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement  = Arrangement.Center
+        ){
+            SaveButton(
+                modifier = Modifier.fillMaxWidth(0.90f),
+                onClick = { /*TODO*/ },
+                text = stringResource(id = R.string.save_button)
+            )
+        }
+    }
+}
+
+@Preview(name = "Modo Retrato", widthDp = 320)
+@Preview(name = "Modo Paisagem", widthDp = 640)
+@Composable
+fun EditPasswordPreview() {
+    PlainTextTheme {
+        PlainTextTheme {
+            Scaffold (
+                topBar = {
+                    TopBarComponent()
+                },
+                containerColor = colorResource(id = R.color.black),
+                contentColor = colorResource(id = R.color.white)
+            ) {
+                EditPasswordScreen(
+                    modifier = Modifier.padding(it)
+                )
+            }
+        }
+    }
+}
+
+@Preview(name = "Modo Retrato", widthDp = 320)
+@Preview(name = "Modo Paisagem", widthDp = 640)
+@Composable
+fun AddNewPasswordPreview() {
+    PlainTextTheme {
+        PlainTextTheme {
+            Scaffold (
+                topBar = {
+                    TopBarComponent()
+                },
+                containerColor = colorResource(id = R.color.black),
+                contentColor = colorResource(id = R.color.white)
+            ) {
+                AddNewPasswordScreen(
+                    modifier = Modifier.padding(it)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
+    if (shouldShowDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                shouldShowDialog.value = false
+            },
+
+            title = { Text(text = "Sobre") },
+            text = { Text(text = "PlainText Password Manager v1.0") },
+            confirmButton = {
+                Button(
+                    onClick = { shouldShowDialog.value = false }
+                ) {
+                    Text(text = "Ok")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun TopBarComponent(
+    navigateToSettings: (() -> Unit?)? = null
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val shouldShowDialog = remember { mutableStateOf(false) }
+
+    if (shouldShowDialog.value) {
+        MyAlertDialog(shouldShowDialog = shouldShowDialog)
+    }
+
+    TopAppBar(
+        title = { Text("PlainText", color = colorResource(id = R.color.white)) },
+        actions = {
+
+            if (navigateToSettings != null) {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Menu",
+                        tint = colorResource(id = R.color.white)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(colorResource(id = R.color.black))
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Configurações") },
+                        onClick = {
+                            navigateToSettings();
+                            expanded = false;
+                        },
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text("Sobre");
+                        },
+                        onClick = {
+                            shouldShowDialog.value = true;
+                            expanded = false;
+                        },
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = colorResource(id = R.color.black)
+        )
+    )
+}
+
+@Composable
+// Composable que representa uma linha com uma imagem e um texto
+>>>>>>> 36d9457 (New Solutions)
 fun CustomImageTextRow(
     backgroundColor: Color = colorResource(id = R.color.login_row_background),
     imageResId: Int = R.drawable.ic_launcher_foreground,
@@ -214,6 +551,7 @@ fun CustomImageTextRow(
     }
 }
 
+<<<<<<< HEAD
 // --- PREVIEW FIXES ---
 
 /**
@@ -289,6 +627,29 @@ private fun AddNewPasswordPreview() {
             AddNewPasswordScreen(
                 modifier = Modifier.padding(it),
                 viewModel = fakeViewModel
+=======
+@Composable
+// Botão com ícones à esquerda e à direita
+fun SaveButton(
+    onClick: () -> Unit,
+    text: String,
+    modifier: Modifier = Modifier,
+    buttonColor: Color = colorResource(id =  R.color.login_button)
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text.uppercase(),
+                fontWeight = FontWeight.Bold
+>>>>>>> 36d9457 (New Solutions)
             )
         }
     }
