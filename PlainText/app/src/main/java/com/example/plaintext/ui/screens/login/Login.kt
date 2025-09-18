@@ -1,25 +1,17 @@
 package com.example.plaintext.ui.screens.login
 
-import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -37,16 +29,15 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,14 +58,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import com.example.plaintext.R
 import com.example.plaintext.ui.theme.PlainTextTheme
+import com.example.plaintext.ui.viewmodel.LoginUiState
 import com.example.plaintext.ui.viewmodel.LoginViewModel
+import com.example.plaintext.ui.viewmodel.PreferencesState
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 data class LoginState(
     val preencher: Boolean,
@@ -85,123 +79,119 @@ data class LoginState(
     val checkCredentials: (login: String, password: String) -> Boolean,
 )
 
-@Composable
-fun Login_screen(
-    navigateToSettings: () -> Unit,
-    navigateToList: () -> Unit,
-    viewModel: PreferencesViewModel = hiltViewModel()
-) {
-
-}
-
-@Composable
-fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
-    if (shouldShowDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                shouldShowDialog.value = false
-            },
-
-            title = { Text(text = "Sobre") },
-            text = { Text(text = "PlainText Password Manager v1.0") },
-            confirmButton = {
-                Button(
-                    onClick = { shouldShowDialog.value = false }
-                ) {
-                    Text(text = "Ok")
-                }
-            }
-        )
-    }
-}
+//@Composable
+//fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
+//    if (shouldShowDialog.value) {
+//        AlertDialog(
+//            onDismissRequest = {
+//                shouldShowDialog.value = false
+//            },
+//
+//            title = { Text(text = "Sobre") },
+//            text = { Text(text = "PlainText Password Manager v1.0") },
+//            confirmButton = {
+//                Button(
+//                    onClick = { shouldShowDialog.value = false }
+//                ) {
+//                    Text(text = "Ok")
+//                }
+//            }
+//        )
+//    }
+//}
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun TopBarComponent(
-    navigateToSettings: (() -> Unit?)? = null
+    navigateToSettings: () -> Unit,
+    showAboutDialog: () -> Unit,
+    isOnPreferencesScreen: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val shouldShowDialog = remember { mutableStateOf(false) }
-
-    if (shouldShowDialog.value) {
-        MyAlertDialog(shouldShowDialog = shouldShowDialog)
-    }
 
     TopAppBar(
-        title = { Text("PlainText", color = colorResource(id = R.color.white)) },
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                color = colorResource(id = R.color.font_screen)
+            )
+        },
         actions = {
-
-            if (navigateToSettings != null) {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Menu",
-                        tint = colorResource(id = R.color.white)
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.background(colorResource(id = R.color.black))
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Configurações") },
-                        onClick = {
-                            navigateToSettings();
-                            expanded = false;
-                        },
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text("Sobre");
-                        },
-                        onClick = {
-                            shouldShowDialog.value = true;
-                            expanded = false;
-                        },
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "Menu",
+                    tint = colorResource(id = R.color.font_screen)
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(colorResource(id = R.color.font_screen))
+                    .padding(8.dp)
+//                    .border(2.dp, colorResource(id = R.color.border_dropdown_menu))
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = if (isOnPreferencesScreen) "Voltar" else "Configurações",
+                            color = colorResource(id = R.color.font_screen)
+                        )
+                    },
+                    onClick = {
+                        navigateToSettings();
+                        expanded = false;
+                    },
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .background(colorResource(id = R.color.login_button))
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = "Sobre",
+                            color = colorResource(id = R.color.font_screen)
+                        )
+                    },
+                    onClick = {
+                        showAboutDialog()
+                        expanded = false;
+                    },
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .background(colorResource(id = R.color.login_button))
+                )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(id = R.color.black)
+            containerColor = colorResource(id = R.color.background_container),
+        ),
+    )
+}
+
+class FakeLoginViewModel() : ViewModel() {
+    private val _loginUiState = MutableStateFlow(LoginUiState(login = "devtitans", password = "senha123", isChecked = true))
+    val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
+    fun updateLogin(login: String) {}
+    fun updatePassword(password: String) {}
+    fun updateIsChecked(isChecked: Boolean) {}
+}
+
+class FakePreferencesViewModel() : PreferencesViewModel(
+    SavedStateHandle()
+) {
+    var fakePreferencesState by mutableStateOf(
+        PreferencesState(
+            login = "previsão",
+            password = "senha123",
+            preencher = true
         )
     )
 }
 
-class Login : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PlainTextTheme {
-                Scaffold(
-                    topBar = {
-                        TopBarComponent(
-                            navigateToSettings = {
-                            }
-                        )
-                    },
-                    containerColor = colorResource(id = R.color.black),
-                    contentColor = colorResource(id = R.color.white)
-                ) {
-                    // Modifier.padding(it) é usado para adicionar padding ao conteúdo da tela
-                    // para os casos em que a barra de navegação é exibida no Scaffold.
-                    // Isso é útil para evitar que o conteúdo seja sobreposto pela barra de navegação.
-                    LoginScreen(
-                        modifier = Modifier.padding(it),
-                        navigateToSettings = {},
-                        navigateToList = {}
-                    )
-                }
-            }
-        }
-    }
-}
-
 // Composable que representa a pré-visualização da tela de login
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(name = "Modo Retrato", widthDp = 320)
 @Preview(name = "Modo Paisagem", widthDp = 640)
 @Composable
@@ -210,16 +200,33 @@ fun PreviewUILogin() {
         PlainTextTheme {
             Scaffold (
                 topBar = {
-                    TopBarComponent()
+                    TopBarComponent(
+                        navigateToSettings = {},
+                        showAboutDialog = {},
+                        isOnPreferencesScreen = false
+                    )
                 },
-                containerColor = colorResource(id = R.color.black),
-                contentColor = colorResource(id = R.color.white)
+                containerColor = colorResource(id = R.color.background_container),
+                contentColor = colorResource(id = R.color.font_screen)
             ) {
-                LoginScreen(
+                LoginContainer(
                     modifier = Modifier.padding(it),
-                    navigateToSettings = {},
-                    navigateToList = {},
-                    viewModel = viewModel()
+                    loginUiState = LoginUiState(
+                        login = "devtitans",
+                        password = "senha123",
+                        isChecked = true
+                    ),
+                    preferencesState = PreferencesState(
+                        login = "previsão",
+                        password = "senha123",
+                        preencher = true
+                    ),
+                    onUpdateLogin = {},
+                    onUpdatePassword = {},
+                    onUpdateIsChecked = {},
+                    onLoginClick = {},
+                    isLoginFailed = false,
+                    onDismissLoginFailedDialog = {}
                 )
             }
         }
@@ -227,16 +234,88 @@ fun PreviewUILogin() {
 }
 
 @Composable
-// Tela de login
-private fun LoginScreen(
-    modifier: Modifier,
+fun LoginScreen(
     navigateToSettings: () -> Unit,
     navigateToList: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel() // Usando o Hilt
+    modifier: Modifier = Modifier,
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    preferencesViewModel: PreferencesViewModel = hiltViewModel(),
+) {
+    // Variáveis de estado para controlar os diálogos
+    var showAboutDialog by rememberSaveable { mutableStateOf(false) }
+
+    // Coleta os estados dos ViewModels
+    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val preferencesState by remember { mutableStateOf(preferencesViewModel.preferencesState) }
+
+    // Estado local para a tela
+    var isLoginFailed by rememberSaveable { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopBarComponent(
+                navigateToSettings = navigateToSettings,
+                showAboutDialog = { showAboutDialog = true },
+                isOnPreferencesScreen = false
+            )
+        },
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
+    ) {
+        LoginContainer(
+            modifier = Modifier.padding(it),
+            loginUiState = loginUiState,
+            preferencesState = preferencesState,
+//            navigateToList = navigateToList,
+            onUpdateLogin = loginViewModel::updateLogin,
+            onUpdatePassword = loginViewModel::updatePassword,
+            onUpdateIsChecked = loginViewModel::updateIsChecked,
+            onLoginClick = {
+                // A LÓGICA DE VERIFICAÇÃO ESTÁ AQUI NA TELA PRINCIPAL
+                if (preferencesViewModel.checkCredentials(
+                        loginUiState.login,
+                        loginUiState.password
+                    )
+                ) {
+                    navigateToList()
+                    isLoginFailed = false // Reseta o estado em caso de sucesso
+                } else {
+                    isLoginFailed = true // Atualiza o estado da tela em caso de falha
+                }
+            },
+            isLoginFailed = isLoginFailed, // Passa o estado do erro para o componente filho
+            onDismissLoginFailedDialog = { isLoginFailed = false } // Passa o callback para o filho
+        )
+    }
+
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = { Text(stringResource(id = R.string.login_alertDialog_title)) },
+            text = { Text(stringResource(id = R.string.login_alertDialog_text)) },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+// Tela de login
+fun LoginContainer(
+    modifier: Modifier,
+    loginUiState: LoginUiState,
+    preferencesState: PreferencesState,
+    onUpdateLogin: (String) -> Unit,
+    onUpdatePassword: (String) -> Unit,
+    onUpdateIsChecked: (Boolean) -> Unit,
+    onLoginClick: () -> Unit,
+    isLoginFailed: Boolean, // Recebe o estado do erro do pai
+    onDismissLoginFailedDialog: () -> Unit // Recebe o callback para fechar o diálogo
 ){
-    // Recupera o estado da tela de login a partir do ViewModel.
-    // Isso permiti que IU possa se recompor automaticamente quando o estado do ViewModel muda.
-    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -247,19 +326,10 @@ private fun LoginScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(8.dp)
+            .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
     ){
-        /*
-          Lógica descartada:
-          Código foi implentado para aplicar a criação e gerenciamento de estados da
-          tela de login (Composable) de forma local (dentro de função).
-          Eram estados criados com remeber que poderiam ser perdidos quando
-          a tela era rotacionada.
-        */
-//        var login by remember { mutableStateOf("") }
-//        var password by remember { mutableStateOf("") }
-//        var isChecked by remember { mutableStateOf(false) }
-
         CustomImageTextRow(
             contentDescription = "cabeça de robô Android",
             textResId = R.string.login_image_text
@@ -274,38 +344,33 @@ private fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
 
-        Column (
+        LoginInput(
+            // Configura com o valor de login do estado da tela
+            value = loginUiState.login,
+            // Utiliza a chamada da função do ViewModel para atualizar o estado
+            onValueChange = onUpdateLogin,
+            label = stringResource(id = R.string.login_login),
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = Icons.Default.AccountBox
+        )
+
+        LoginInput(
+            // Configura com o valor de senha do estado da tela
+            value = loginUiState.password,
+            // Utiliza a chamada da função do ViewModel para atualizar o estado
+            onValueChange = onUpdatePassword,
+            label = stringResource(id = R.string.login_senha),
             modifier = Modifier
                 .fillMaxWidth()
-        ){
-            LoginInput(
-                // Configura com o valor de login do estado da tela
-                value = loginUiState.login,
-                // Utiliza a chamada da função do ViewModel para atualizar o estado
-                onValueChange = viewModel::updateLogin,
-                label = stringResource(id = R.string.login_login),
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = Icons.Default.AccountBox
-            )
-
-            LoginInput(
-                // Configura com o valor de senha do estado da tela
-                value = loginUiState.password,
-                // Utiliza a chamada da função do ViewModel para atualizar o estado
-                onValueChange = viewModel::updatePassword,
-                label = stringResource(id = R.string.login_senha),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                leadingIcon = Icons.Default.VpnKey,
-                isPasswordInput = true
-            )
-        }
+                .padding(top = 8.dp),
+            leadingIcon = Icons.Default.VpnKey,
+            isPasswordInput = true
+        )
 
         CheckableRow(
             // Configura com o valor de checked do estado da tela
             checked = loginUiState.isChecked,
-            onCheckedChange = viewModel::updateIsChecked,
+            onCheckedChange = onUpdateIsChecked,
             text = stringResource(id = R.string.login_isCheck),
             modifier = Modifier
                 .fillMaxWidth()
@@ -313,15 +378,28 @@ private fun LoginScreen(
             spacerWidth = 0.dp
         )
 
+        if (isLoginFailed) {
+            AlertDialog(
+                onDismissRequest = onDismissLoginFailedDialog,
+                title = { Text("Falha no Login") },
+                text = { Text("Login ou senha incorretos. Por favor, tente novamente.") },
+                confirmButton = {
+                    TextButton(onClick = onDismissLoginFailedDialog) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
         Row (
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             horizontalArrangement  = Arrangement.Center
         ){
-            ButtonWithIcons(
+            CustomButton(
                 modifier = Modifier.fillMaxWidth(0.90f),
-                onClick = { /*TODO*/ },
+                onClick = onLoginClick,
                 text = stringResource(id = R.string.login_button),
                 leadingIcon = Icons.AutoMirrored.Filled.Login,
                 trailingIcon = Icons.AutoMirrored.Filled.Login,
@@ -395,6 +473,7 @@ fun LoginInput(
                 contentDescription = "Icone de Entradada de Texto"
             )},
         modifier = modifier,
+        visualTransformation = visualTransformation,
         colors = OutlinedTextFieldDefaults.colors(
             focusedTextColor = contentColor,
             unfocusedTextColor = contentColor,
@@ -437,12 +516,12 @@ fun CheckableRow(
 
 @Composable
 // Botão com ícones à esquerda e à direita
-fun ButtonWithIcons(
+fun CustomButton(
     onClick: () -> Unit,
     text: String,
+    modifier: Modifier = Modifier,
     leadingIcon: ImageVector?,
     trailingIcon: ImageVector?,
-    modifier: Modifier = Modifier,
     leadingIconRotation: Float = 0f,
     trailingIconRotation: Float = 0f,
     spacerWidth: Dp = 8.dp,

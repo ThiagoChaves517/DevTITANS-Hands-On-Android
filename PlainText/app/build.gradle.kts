@@ -11,7 +11,6 @@ plugins {
 android {
     namespace = "com.example.plaintext"
     compileSdk = 36
-
     defaultConfig {
         applicationId = "com.example.plaintext"
         minSdk = 30
