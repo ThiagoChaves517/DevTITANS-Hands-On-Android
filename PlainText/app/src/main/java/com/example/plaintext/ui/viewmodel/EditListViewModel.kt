@@ -1,5 +1,3 @@
-// No novo ficheiro: app/src/main/java/com/example/plaintext/ui/viewmodel/EditListViewModel.kt
-
 package com.example.plaintext.ui.viewmodel
 
 import androidx.lifecycle.SavedStateHandle

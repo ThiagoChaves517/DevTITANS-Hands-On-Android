@@ -54,6 +54,7 @@ fun EditList(
         AddNewPasswordScreen(
             onSaveClick = { passwordInfo ->
                 viewModel.savePassword(passwordInfo)
+                navigateBack()
             },
             navigateBack = navigateBack,
             navigateToSettings = {}
@@ -64,6 +65,7 @@ fun EditList(
             passwordInfo = args.password,
             onSaveClick = { passwordInfo ->
                 viewModel.savePassword(passwordInfo)
+                navigateBack()
             },
             navigateBack = navigateBack,
             navigateToSettings = {}
@@ -253,7 +255,7 @@ fun AddNewPasswordContainer(
                 modifier = Modifier.fillMaxWidth(0.90f),
                 onClick = {
                     val updatedPassword = PasswordInfo(
-                        id = 3, // Enquanto não houver um contador, IDs serão igual 3
+                        id = 0, //O Room (a biblioteca do banco de dados) interpretará o id = 0 como a necessidade de gerar um novo ID automaticamente (auto-incremento).
                         name = name,
                         login = login,
                         password = password,
