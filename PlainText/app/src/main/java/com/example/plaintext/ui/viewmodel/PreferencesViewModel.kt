@@ -26,8 +26,15 @@ import javax.inject.Inject
 open class PreferencesViewModel @Inject constructor(
     handle: SavedStateHandle
 ) : ViewModel() {
-    var preferencesState by mutableStateOf(PreferencesState(login = "devtitans", password = "123", preencher = true))
-        private set
+    var preferencesState by mutableStateOf(
+        PreferencesState(
+            login = "devtitans",
+            password = "Senha@123",
+            preencher = false
+        )
+    )
+
+    private set
 
     fun updateLogin(login: String) {
         preferencesState = preferencesState.copy(login = login)

@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.plaintext.R
-import com.example.plaintext.ui.screens.login.TopBarComponent
 import com.example.plaintext.ui.viewmodel.ListViewModel
 import com.example.plaintext.ui.viewmodel.ListViewState
 import androidx.compose.foundation.overscroll

@@ -2,6 +2,7 @@ package com.example.plaintext.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -10,6 +11,8 @@ import com.example.plaintext.ui.screens.editList.EditList
 import com.example.plaintext.ui.screens.hello.Hello_screen
 import com.example.plaintext.ui.screens.login.LoginScreen
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
+import com.example.plaintext.ui.viewmodel.LoginViewModel
+import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
 
@@ -17,6 +20,9 @@ import kotlin.reflect.typeOf
 fun PlainTextApp(
     appState: JetcasterAppState = rememberJetcasterAppState()
 ) {
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
+
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login
@@ -30,7 +36,8 @@ fun PlainTextApp(
             LoginScreen(
                 navigateToSettings = { appState.navigateToSettings() },
                 navigateToList = { appState.navigateToList("dummyName") }, // 'dummyName' é um placeholder
-                modifier = Modifier,
+                loginViewModel = loginViewModel,
+                preferencesViewModel = preferencesViewModel
             )
         }
         composable<Screen.EditList>(
@@ -47,7 +54,8 @@ fun PlainTextApp(
         // Screen.Preferences: Objeto serializável que associa uma rota a um Composable.
         composable<Screen.Preferences> {
             SettingsScreen(
-                navigateToLogin = { appState.navigateToLogin() }
+                navigateToLogin = { appState.navigateToLogin() },
+                viewModel = preferencesViewModel
             )
         }
     }
