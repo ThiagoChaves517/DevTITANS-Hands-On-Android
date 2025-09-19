@@ -1,7 +1,5 @@
 package com.example.plaintext.ui.screens.editList
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,185 +8,94 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.VpnKey
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
+import com.example.plaintext.ui.screens.login.CustomButton
+import com.example.plaintext.ui.screens.login.TopBarComponent
+import com.example.plaintext.ui.screens.login.CustomImageTextRow
 import com.example.plaintext.ui.theme.PlainTextTheme
-
+import com.example.plaintext.ui.viewmodel.EditListViewModel
 
 @Composable
 fun EditList(
-    args: Screen.EditList,
+    args: Screen.EditList, // Argumento recebido pela navegação
     navigateBack: () -> Unit,
-    savePassword: (password: PasswordInfo) -> Unit
+    viewModel: EditListViewModel = hiltViewModel()
 ) {
+    // Verificamos se o ID é 0. Se for, consideramos que é uma nova senha.
+    // Esta é uma convenção comum.
     val isNewPassword = args.password.id == 0
-    val scrollState = rememberScrollState()
 
-    var name by remember { mutableStateOf(args.password.name) }
-    var login by remember { mutableStateOf(args.password.login) }
-    var password by remember { mutableStateOf(args.password.password) }
-    var notes by remember { mutableStateOf(args.password.notes) }
-
-    Scaffold(
-        topBar = {
-            TopBarComponent()
-        },
-        containerColor = colorResource(id = R.color.background_container),
-        contentColor = colorResource(id = R.color.font_screen)
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(8.dp)
-        ) {
-            CustomImageTextRow(
-                contentDescription = "cabeça de robô Android",
-                textResId = R.string.login_image_text
-            )
-
-            Text(
-                text = stringResource(
-                    id = if (isNewPassword) R.string.editlist_adding_new_password
-                    else R.string.editlist_editing_password
-                ).uppercase(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 48.dp, bottom = 5.dp),
-                textAlign = TextAlign.Start,
-                fontWeight = FontWeight.Bold
-            )
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                EditInput(
-                    "Nome",
-                    textInputState = remember { mutableStateOf(name) },
-                    onValueChange = { name = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                EditInput(
-                    "Usuário",
-                    textInputState = remember { mutableStateOf(login) },
-                    onValueChange = { login = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                EditInput(
-                    "Senha",
-                    textInputState = remember { mutableStateOf(password) },
-                    onValueChange = { password = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                EditInput(
-                    "Notas",
-                    textInputState = remember { mutableStateOf(notes) },
-                    onValueChange = { notes = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                SaveButton(
-                    modifier = Modifier.fillMaxWidth(0.90f),
-                    onClick = {
-                        val updatedPassword = args.password.copy(
-                            name = name,
-                            login = login,
-                            password = password,
-                            notes = notes
-                        )
-                        savePassword(updatedPassword)
-                        navigateBack()
-                    },
-                    text = stringResource(id = R.string.save_button)
-                )
-            }
-        }
+    if (isNewPassword) {
+        // Se for uma nova senha, exibe a tela de adição de senha.
+        AddNewPasswordScreen(
+            onSaveClick = { passwordInfo ->
+                viewModel.savePassword(passwordInfo)
+                navigateBack()
+            },
+            navigateBack = navigateBack,
+            navigateToSettings = {}
+        )
+    } else {
+        // Se a senha já existir, mostramos a tela de edição, passando os dados.
+        EditPasswordScreen(
+            passwordInfo = args.password,
+            onSaveClick = { passwordInfo ->
+                viewModel.savePassword(passwordInfo)
+                navigateBack()
+            },
+            navigateBack = navigateBack,
+            navigateToSettings = {}
+        )
     }
 }
 
 @Composable
 fun EditInput(
     textInputLabel: String,
-    textInputState: MutableState<String> = mutableStateOf(""),
-    onValueChange: (String) -> Unit,
+    value: String, // Recebe o valor atual do estado
+    onValueChange: (String) -> Unit, // Recebe a função para atualizar o estado
+    //textInputState: MutableState<String> = mutableStateOf(""),
     textInputHeight: Int = 60,
-    modifier: Modifier,
-    contentColor: Color = Color.White
+    contentColor: Color = Color.White,
 ) {
-    val padding: Int = 30
-
-    var textState by rememberSaveable { textInputState }
-
     Row(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .height(textInputHeight.dp)
-            .padding(horizontal = padding.dp),
+            .height(textInputHeight.dp),
+            //.padding(horizontal = padding.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         OutlinedTextField(
-            value = textState,
-            onValueChange = {
-                textState = it
-                onValueChange(it)
-            },
+            value = value,
+            onValueChange = onValueChange,
             label = { Text(textInputLabel) },
-            modifier = modifier,
+            modifier = Modifier
+                .height(textInputHeight.dp)
+                .fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = contentColor,
                 unfocusedTextColor = contentColor,
@@ -206,25 +113,243 @@ fun EditInput(
 }
 
 @Composable
-fun EditPasswordScreen(
+fun EditPasswordContainer(
     modifier: Modifier,
+    passwordInfo: PasswordInfo,
+    onSaveClick: (PasswordInfo) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    login: String,
+    onLoginChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit
+){
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(8.dp)
+    ) {
+        CustomImageTextRow(
+            contentDescription = "cabeça de robô Android",
+            textResId = R.string.login_image_text
+        )
+
+        Text(
+            text = stringResource(R.string.editlist_editing_password).uppercase(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp, bottom = 5.dp),
+            textAlign = TextAlign.Start,
+            fontWeight = FontWeight.Bold
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            EditInput(
+                "Nome", value = name, onValueChange = onNameChange
+            )
+            EditInput(
+                "Usuário", value = login, onValueChange = onLoginChange
+            )
+            EditInput(
+                "Senha", value = password, onValueChange = onPasswordChange
+            )
+            EditInput(
+                "Notas", value = notes, onValueChange = onNotesChange
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CustomButton(
+                modifier = Modifier.fillMaxWidth(0.90f),
+                onClick = {
+                    val updatedPassword = passwordInfo.copy(
+                        name = name,
+                        login = login,
+                        password = password,
+                        notes = notes
+                    )
+                    onSaveClick(updatedPassword)
+                },
+                text = stringResource(id = R.string.save_button),
+                leadingIcon = null,
+                trailingIcon = null,
+                trailingIconRotation = 180f
+            )
+        }
+    }
+}
+
+@Composable
+fun AddNewPasswordContainer(
+    modifier: Modifier,
+    onSaveClick: (PasswordInfo) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    login: String,
+    onLoginChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit
+){
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(8.dp)
+    ) {
+        CustomImageTextRow(
+            contentDescription = "cabeça de robô Android",
+            textResId = R.string.login_image_text
+        )
+
+        Text(
+            text = stringResource(R.string.editlist_adding_new_password).uppercase(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp, bottom = 5.dp),
+            textAlign = TextAlign.Start,
+            fontWeight = FontWeight.Bold
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            EditInput(
+                "Nome", value = name, onValueChange = onNameChange
+            )
+            EditInput(
+                "Usuário", value = login, onValueChange = onLoginChange
+            )
+            EditInput(
+                "Senha", value = password, onValueChange = onPasswordChange
+            )
+            EditInput(
+                "Notas", value = notes, onValueChange = onNotesChange
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CustomButton(
+                modifier = Modifier.fillMaxWidth(0.90f),
+                onClick = {
+                    val updatedPassword = PasswordInfo(
+                        id = 0, //O Room (a biblioteca do banco de dados) interpretará o id = 0 como a necessidade de gerar um novo ID automaticamente (auto-incremento).
+                        name = name,
+                        login = login,
+                        password = password,
+                        notes = notes
+                    )
+                    onSaveClick(updatedPassword)
+                },
+                text = stringResource(id = R.string.save_button),
+                leadingIcon = Icons.AutoMirrored.Filled.Login,
+                trailingIcon = Icons.AutoMirrored.Filled.Login,
+                trailingIconRotation = 180f
+            )
+        }
+    }
+}
+
+@Composable
+fun EditPasswordScreen(
+    modifier: Modifier = Modifier,
+    passwordInfo: PasswordInfo,
+    onSaveClick: (PasswordInfo) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToSettings: () -> Unit,
 ) {
-    EditList(
-        Screen.EditList(PasswordInfo(1, "Nome", "Usuário", "Senha", "Notas")),
-        navigateBack = {},
-        savePassword = {}
-    )
+    // Um estado para cada campo, inicializado com os valores da senha
+    var name by rememberSaveable { mutableStateOf(passwordInfo.name) }
+    var login by rememberSaveable { mutableStateOf(passwordInfo.login) }
+    var password by rememberSaveable { mutableStateOf(passwordInfo.password) }
+    var notes by rememberSaveable { mutableStateOf(passwordInfo.notes) }
+
+    Scaffold(
+        topBar = {
+            TopBarComponent(
+                navigateToSettings = navigateToSettings,
+                showAboutDialog = {},
+                isOnPreferencesScreen = false
+            )
+        },
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
+    ) {
+        EditPasswordContainer(
+            modifier = modifier.padding(it),
+            passwordInfo = passwordInfo,
+            onSaveClick = onSaveClick,
+            name = name,
+            onNameChange = { name = it },
+            login = login,
+            onLoginChange = { login = it },
+            password = password,
+            onPasswordChange = { password = it },
+            notes = notes,
+            onNotesChange = { notes = it }
+        )
+    }
 }
 
 @Composable
 fun AddNewPasswordScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
+    onSaveClick: (PasswordInfo) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToSettings: () -> Unit,
 ) {
-    EditList(
-        Screen.EditList(PasswordInfo(0, "", "", "", "")),
-        navigateBack = {},
-        savePassword = {}
-    )
+    // Um estado para cada campo, inicializado com os valores da senha
+    var name by rememberSaveable { mutableStateOf("") }
+    var login by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var notes by rememberSaveable { mutableStateOf("") }
+
+    Scaffold(
+        topBar = {
+            TopBarComponent(
+                navigateToSettings = navigateToSettings,
+                showAboutDialog = {},
+                isOnPreferencesScreen = false
+            )
+        },
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
+    ) {
+        AddNewPasswordContainer(
+            modifier = modifier.padding(it),
+            onSaveClick = onSaveClick,
+            name = name,
+            onNameChange = { name = it },
+            login = login,
+            onLoginChange = { login = it },
+            password = password,
+            onPasswordChange = { password = it },
+            notes = notes,
+            onNotesChange = { notes = it }
+        )
+    }
 }
 
 @Preview(name = "Modo Retrato", widthDp = 320)
@@ -233,15 +358,37 @@ fun AddNewPasswordScreen(
 fun EditPasswordPreview() {
     PlainTextTheme {
         PlainTextTheme {
+            var name by rememberSaveable { mutableStateOf("Thiago") }
+            var login by rememberSaveable { mutableStateOf("ShadowX25") }
+            var password by rememberSaveable { mutableStateOf("1234") }
+            var notes by rememberSaveable { mutableStateOf("Senha para testes") }
+
             Scaffold(
                 topBar = {
-                    TopBarComponent()
+                    TopBarComponent(
+                        navigateToSettings = {},
+                        showAboutDialog = {},
+                        isOnPreferencesScreen = false
+                    )
                 },
                 containerColor = colorResource(id = R.color.background_container),
                 contentColor = colorResource(id = R.color.font_screen)
             ) {
-                EditPasswordScreen(
-                    modifier = Modifier.padding(it)
+                // Fake instance of PasswordInfo, so we can pass it to the EditPasswordContainer
+                val passwordInfo = PasswordInfo(0, name, login, password, notes)
+
+                EditPasswordContainer(
+                    modifier = Modifier.padding(it),
+                    passwordInfo = passwordInfo,
+                    onSaveClick = {},
+                    name = name,
+                    onNameChange = { name = it },
+                    login = login,
+                    onLoginChange = { login = it },
+                    password = password,
+                    onPasswordChange = { password = it },
+                    notes = notes,
+                    onNotesChange = { notes = it }
                 )
             }
         }
@@ -254,157 +401,35 @@ fun EditPasswordPreview() {
 fun AddNewPasswordPreview() {
     PlainTextTheme {
         PlainTextTheme {
+            var name by rememberSaveable { mutableStateOf("") }
+            var login by rememberSaveable { mutableStateOf("") }
+            var password by rememberSaveable { mutableStateOf("") }
+            var notes by rememberSaveable { mutableStateOf("") }
+
             Scaffold(
                 topBar = {
-                    TopBarComponent()
+                    TopBarComponent(
+                        navigateToSettings = {},
+                        showAboutDialog = {},
+                        isOnPreferencesScreen = false
+                    )
                 },
                 containerColor = colorResource(id = R.color.background_container),
                 contentColor = colorResource(id = R.color.font_screen)
             ) {
-                AddNewPasswordScreen(
-                    modifier = Modifier.padding(it)
+                AddNewPasswordContainer(
+                    modifier = Modifier.padding(it),
+                    onSaveClick = {},
+                    name = name,
+                    onNameChange = { name = it },
+                    login = login,
+                    onLoginChange = { login = it },
+                    password = password,
+                    onPasswordChange = { password = it },
+                    notes = notes,
+                    onNotesChange = { notes = it }
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun MyAlertDialog(shouldShowDialog: MutableState<Boolean>) {
-    if (shouldShowDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                shouldShowDialog.value = false
-            },
-
-            title = { Text(text = "Sobre") },
-            text = { Text(text = "PlainText Password Manager v1.0") },
-            confirmButton = {
-                Button(
-                    onClick = { shouldShowDialog.value = false }
-                ) {
-                    Text(text = "Ok")
-                }
-            }
-        )
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun TopBarComponent(
-    navigateToSettings: (() -> Unit?)? = null
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val shouldShowDialog = remember { mutableStateOf(false) }
-
-    if (shouldShowDialog.value) {
-        MyAlertDialog(shouldShowDialog = shouldShowDialog)
-    }
-
-    TopAppBar(
-        title = { Text("PlainText", color = colorResource(id = R.color.font_screen)) },
-        actions = {
-
-            if (navigateToSettings != null) {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Menu",
-                        tint = colorResource(id = R.color.font_screen)
-                    )
-                }
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.background(colorResource(id = R.color.background_container))
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Configurações") },
-                        onClick = {
-                            navigateToSettings();
-                            expanded = false;
-                        },
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text("Sobre");
-                        },
-                        onClick = {
-                            shouldShowDialog.value = true;
-                            expanded = false;
-                        },
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = colorResource(id = R.color.background_container)
-        )
-    )
-}
-
-@Composable
-// Composable que representa uma linha com uma imagem e um texto
-fun CustomImageTextRow(
-    backgroundColor: Color = colorResource(id = R.color.login_row_background),
-    imageResId: Int = R.drawable.ic_launcher_foreground,
-    contentDescription: String,
-    textResId: Int,
-    imageStartPadding: Dp = 25.dp,
-    textImageSpacerWidth: Dp = 8.dp,
-    textEndPadding: Dp = 25.dp
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(backgroundColor),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = contentDescription,
-            modifier = Modifier.padding(start = imageStartPadding)
-        )
-
-        Spacer(Modifier.width(textImageSpacerWidth))
-
-        Text(
-            text = stringResource(id = textResId),
-            modifier = Modifier.padding(end = textEndPadding)
-        )
-
-        Spacer(
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-// Botão com ícones à esquerda e à direita
-fun SaveButton(
-    onClick: () -> Unit,
-    text: String,
-    modifier: Modifier = Modifier,
-    buttonColor: Color = colorResource(id = R.color.login_button)
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = text.uppercase(),
-                fontWeight = FontWeight.Bold
-            )
         }
     }
 }
