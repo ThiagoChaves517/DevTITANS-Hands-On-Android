@@ -2,6 +2,7 @@ package com.example.plaintext.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
@@ -10,6 +11,7 @@ import com.example.plaintext.ui.screens.editList.EditList
 import com.example.plaintext.ui.screens.hello.Hello_screen
 import com.example.plaintext.ui.screens.login.LoginScreen
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
+import com.example.plaintext.ui.viewmodel.EditListViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
 
@@ -40,7 +42,7 @@ fun PlainTextApp(
             EditList(
                 args,
                 navigateBack = {},
-                savePassword = {}
+                viewModel = hiltViewModel()
             )
         }
         // Construtor de rotas para a tela de configurações
