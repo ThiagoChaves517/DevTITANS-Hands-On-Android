@@ -12,6 +12,8 @@ import com.example.plaintext.ui.screens.hello.Hello_screen
 import com.example.plaintext.ui.screens.login.LoginScreen
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
 import com.example.plaintext.ui.viewmodel.EditListViewModel
+import com.example.plaintext.ui.viewmodel.LoginViewModel
+import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
 import kotlin.reflect.typeOf
 
@@ -19,6 +21,9 @@ import kotlin.reflect.typeOf
 fun PlainTextApp(
     appState: JetcasterAppState = rememberJetcasterAppState()
 ) {
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    val loginViewModel: LoginViewModel = hiltViewModel()
+
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login
@@ -32,7 +37,8 @@ fun PlainTextApp(
             LoginScreen(
                 navigateToSettings = { appState.navigateToSettings() },
                 navigateToList = { appState.navigateToList("dummyName") }, // 'dummyName' é um placeholder
-                modifier = Modifier,
+                loginViewModel = loginViewModel,
+                preferencesViewModel = preferencesViewModel
             )
         }
         composable<Screen.EditList>(
@@ -49,7 +55,8 @@ fun PlainTextApp(
         // Screen.Preferences: Objeto serializável que associa uma rota a um Composable.
         composable<Screen.Preferences> {
             SettingsScreen(
-                navigateToLogin = { appState.navigateToLogin() }
+                navigateToLogin = { appState.navigateToLogin() },
+                viewModel = preferencesViewModel
             )
         }
     }

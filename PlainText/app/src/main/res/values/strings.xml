@@ -8,8 +8,6 @@
     <string name="login_isCheck">Salvar as informações de login</string>
     <string name="login_button">Entrar</string>
     <string name="login_image_text">\"The most \nsecure password \nmanager\"</string>"
-    <string name="login_alertDialog_title">Sobre o PlainText</string>
-    <string name="login_alertDialog_text">Este aplicativo foi criado para gerenciar senhas e informações de forma segura.</string>
     <string name="preferences_input_login_title">Configurar Login</string>
     <string name="preferences_input_login_label">Login</string>
     <string name="preferences_input_login_summary">Configure o login da tela inicial</string>
@@ -18,6 +16,14 @@
     <string name="preferences_input_password_summary">Configure a senha para entrar no sistema:</string>
     <string name="preferences_item_title">Lembrar Login e Senha</string>
     <string name="preferences_item_summary">Preenchimento automático do login</string>
+    <string name="about_title">Sobre o PlainText</string>
+    <string name="about_message">Este aplicativo foi criado para gerenciar senhas e informações de forma segura.</string>
+    <string name="about_confirm">OK</string>
+    <string name="DropdownMenuItem_settings_back">Voltar</string>
+    <string name="DropdownMenuItem_settings">Configurações</string>
+    <string name="DropdownMenuItem_about">Sobre</string>
+
+
     <string name="editlist_adding_new_password">Adicionar nova senha</string>
     <string name="editlist_editing_password">Editar senha</string>
     <string name="save_button">Salvar</string>

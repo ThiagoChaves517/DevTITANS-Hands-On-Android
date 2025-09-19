@@ -9,18 +9,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavHostController
-import com.example.plaintext.ui.screens.login.TopBarComponent
+import com.example.plaintext.ui.screens.util.AboutDialog
 import com.example.plaintext.ui.screens.util.PreferenceInput
 import com.example.plaintext.ui.screens.util.PreferenceItem
+import com.example.plaintext.ui.screens.util.TopBarComponent
 import com.example.plaintext.ui.viewmodel.PreferencesState
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
@@ -28,14 +28,21 @@ import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 fun SettingsScreen(
 //    navController: NavHostController?,
     navigateToLogin: () -> Unit,
-    viewModel: PreferencesViewModel = hiltViewModel()
+    viewModel: PreferencesViewModel
 ){
+    var showAboutDialog by rememberSaveable { mutableStateOf(false) }
+
+    AboutDialog(
+        isShowing = showAboutDialog,
+        onDismissRequest = { showAboutDialog = false }
+    )
+
     Scaffold(
         topBar = {
             TopBarComponent(
 //                navigateToSettings = { navController?.navigateUp() },
                 navigateToSettings = navigateToLogin,
-                showAboutDialog = {},
+                showAboutDialog = { showAboutDialog = true },
                 isOnPreferencesScreen = true
             )
         },
