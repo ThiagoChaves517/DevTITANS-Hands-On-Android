@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
@@ -36,12 +37,13 @@ import com.example.plaintext.ui.screens.login.CustomButton
 import com.example.plaintext.ui.screens.login.TopBarComponent
 import com.example.plaintext.ui.screens.login.CustomImageTextRow
 import com.example.plaintext.ui.theme.PlainTextTheme
+import com.example.plaintext.ui.viewmodel.EditListViewModel
 
 @Composable
 fun EditList(
     args: Screen.EditList, // Argumento recebido pela navegação
     navigateBack: () -> Unit,
-    savePassword: (password: PasswordInfo) -> Unit
+    viewModel: EditListViewModel = hiltViewModel()
 ) {
     // Verificamos se o ID é 0. Se for, consideramos que é uma nova senha.
     // Esta é uma convenção comum.
@@ -51,7 +53,7 @@ fun EditList(
         // Se for uma nova senha, exibe a tela de adição de senha.
         AddNewPasswordScreen(
             onSaveClick = { passwordInfo ->
-                savePassword(passwordInfo)
+                viewModel.savePassword(passwordInfo)
             },
             navigateBack = navigateBack,
             navigateToSettings = {}
@@ -61,7 +63,7 @@ fun EditList(
         EditPasswordScreen(
             passwordInfo = args.password,
             onSaveClick = { passwordInfo ->
-                savePassword(passwordInfo)
+                viewModel.savePassword(passwordInfo)
             },
             navigateBack = navigateBack,
             navigateToSettings = {}
