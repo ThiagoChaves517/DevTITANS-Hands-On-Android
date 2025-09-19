@@ -114,9 +114,13 @@ fun EditPasswordContainer(
     passwordInfo: PasswordInfo,
     onSaveClick: (PasswordInfo) -> Unit,
     name: String,
+    onNameChange: (String) -> Unit,
     login: String,
+    onLoginChange: (String) -> Unit,
     password: String,
-    notes: String
+    onPasswordChange: (String) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit
 ){
     val scrollState = rememberScrollState()
 
@@ -145,16 +149,16 @@ fun EditPasswordContainer(
                 .fillMaxWidth()
         ) {
             EditInput(
-                "Nome", value = name, onValueChange = { name }
+                "Nome", value = name, onValueChange = onNameChange
             )
             EditInput(
-                "Usuário", value = login, onValueChange = { login }
+                "Usuário", value = login, onValueChange = onLoginChange
             )
             EditInput(
-                "Senha", value = password, onValueChange = { password }
+                "Senha", value = password, onValueChange = onPasswordChange
             )
             EditInput(
-                "Notas", value = notes, onValueChange = { notes }
+                "Notas", value = notes, onValueChange = onNotesChange
             )
         }
 
@@ -189,9 +193,13 @@ fun AddNewPasswordContainer(
     modifier: Modifier,
     onSaveClick: (PasswordInfo) -> Unit,
     name: String,
+    onNameChange: (String) -> Unit,
     login: String,
+    onLoginChange: (String) -> Unit,
     password: String,
-    notes: String
+    onPasswordChange: (String) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit
 ){
     val scrollState = rememberScrollState()
 
@@ -220,16 +228,16 @@ fun AddNewPasswordContainer(
                 .fillMaxWidth()
         ) {
             EditInput(
-                "Nome", value = name, onValueChange = { name }
+                "Nome", value = name, onValueChange = onNameChange
             )
             EditInput(
-                "Usuário", value = login, onValueChange = { login }
+                "Usuário", value = login, onValueChange = onLoginChange
             )
             EditInput(
-                "Senha", value = password, onValueChange = { password }
+                "Senha", value = password, onValueChange = onPasswordChange
             )
             EditInput(
-                "Notas", value = notes, onValueChange = { notes }
+                "Notas", value = notes, onValueChange = onNotesChange
             )
         }
 
@@ -290,9 +298,13 @@ fun EditPasswordScreen(
             passwordInfo = passwordInfo,
             onSaveClick = onSaveClick,
             name = name,
+            onNameChange = { name = it },
             login = login,
+            onLoginChange = { login = it },
             password = password,
-            notes = notes
+            onPasswordChange = { password = it },
+            notes = notes,
+            onNotesChange = { notes = it }
         )
     }
 }
@@ -325,9 +337,13 @@ fun AddNewPasswordScreen(
             modifier = modifier.padding(it),
             onSaveClick = onSaveClick,
             name = name,
+            onNameChange = { name = it },
             login = login,
+            onLoginChange = { login = it },
             password = password,
-            notes = notes
+            onPasswordChange = { password = it },
+            notes = notes,
+            onNotesChange = { notes = it }
         )
     }
 }
@@ -362,9 +378,13 @@ fun EditPasswordPreview() {
                     passwordInfo = passwordInfo,
                     onSaveClick = {},
                     name = name,
+                    onNameChange = { name = it },
                     login = login,
+                    onLoginChange = { login = it },
                     password = password,
-                    notes = notes
+                    onPasswordChange = { password = it },
+                    notes = notes,
+                    onNotesChange = { notes = it }
                 )
             }
         }
@@ -397,9 +417,13 @@ fun AddNewPasswordPreview() {
                     modifier = Modifier.padding(it),
                     onSaveClick = {},
                     name = name,
+                    onNameChange = { name = it },
                     login = login,
+                    onLoginChange = { login = it },
                     password = password,
-                    notes = notes
+                    onPasswordChange = { password = it },
+                    notes = notes,
+                    onNotesChange = { notes = it }
                 )
             }
         }
