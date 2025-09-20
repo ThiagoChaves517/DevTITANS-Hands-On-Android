@@ -35,6 +35,7 @@ fun PlainTextApp(
             var args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
         }
+
         composable<Screen.Login>{
             LoginScreen(
                 navigateToSettings = { appState.navigateToSettings() },
@@ -43,6 +44,7 @@ fun PlainTextApp(
                 preferencesViewModel = preferencesViewModel
             )
         }
+
         // Construtor de rotas para a tela de configurações
         // Screen.Preferences: Objeto serializável que associa uma rota a um Composable.
         composable<Screen.Preferences> {
@@ -51,18 +53,20 @@ fun PlainTextApp(
                 viewModel = preferencesViewModel
             )
         }
+
         // Construtor de rotas para a tela de Lista de senhas
         // Screen.List: Objeto serializável que associa uma rota a um Composable.
         composable<Screen.List> {
             ListView()
         }
+
         composable<Screen.EditList>(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
         ) {
             val args = it.toRoute<Screen.EditList>()
             EditList(
                 args,
-                navigateBack = {},
+                navigateBack = { appState.navigateToList("dummyName") },
                 viewModel = hiltViewModel()
             )
         }

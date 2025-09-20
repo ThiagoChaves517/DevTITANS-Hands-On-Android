@@ -77,6 +77,10 @@ class JetcasterAppState(
     fun navigateToList(name: String) {
         navController.navigate(Screen.List)
     }
+
+    fun navigateToEditList() {
+        navController.navigate(Screen.EditList)
+    }
 }
 
 /**
