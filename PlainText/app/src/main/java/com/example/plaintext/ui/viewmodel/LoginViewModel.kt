@@ -31,13 +31,6 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
 
-//    init {
-//        if (!loginUiState.value.isChecked) {
-//
-//            this.updateLogin(login = "")
-//            this.updatePassword(password = "")
-//        }
-//    }
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
 

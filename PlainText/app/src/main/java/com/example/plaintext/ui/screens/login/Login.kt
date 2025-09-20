@@ -14,7 +14,13 @@ import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.VpnKey
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
@@ -42,13 +48,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import com.example.plaintext.R
 import com.example.plaintext.ui.screens.util.AboutDialog
 import com.example.plaintext.ui.screens.util.CheckableRow
 import com.example.plaintext.ui.screens.util.CustomButton
 import com.example.plaintext.ui.screens.util.CustomImageTextRow
+import com.example.plaintext.ui.screens.util.CustomSnackbarHost
 import com.example.plaintext.ui.screens.util.LoginInput
 import com.example.plaintext.ui.screens.util.TopBarComponent
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -59,13 +70,12 @@ fun LoginScreen(
 ) {
     // Variáveis de estado para controlar os diálogos
     var showAboutDialog by rememberSaveable { mutableStateOf(false) }
-
-    // Coleta os estados dos ViewModels
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val preferencesState = preferencesViewModel.preferencesState
-
-    // Estado local para a tela
     var isLoginFailed by rememberSaveable { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
         if (!loginUiState.isChecked) {
@@ -75,6 +85,20 @@ fun LoginScreen(
 
         if (preferencesState.preencher) {
             loginViewModel.updateLogin(preferencesState.login)
+        }
+    }
+
+    val snackBar_message = stringResource(id = R.string.login_snackBar_message)
+
+    LaunchedEffect(isLoginFailed) {
+        if (isLoginFailed) {
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = snackBar_message,
+                    duration = SnackbarDuration.Short
+                )
+                isLoginFailed = false
+            }
         }
     }
 
@@ -91,6 +115,7 @@ fun LoginScreen(
                 isOnPreferencesScreen = false
             )
         },
+        snackbarHost = { CustomSnackbarHost(snackbarHostState) },
         containerColor = colorResource(id = R.color.background_container),
         contentColor = colorResource(id = R.color.font_screen)
     ) {
@@ -102,7 +127,8 @@ fun LoginScreen(
             onUpdateIsChecked = loginViewModel::updateIsChecked,
             onLoginClick = {
                 // A LÓGICA DE VERIFICAÇÃO DE LOGIN E SENHA
-                if (preferencesViewModel.checkCredentials(
+                if (
+                    preferencesViewModel.checkCredentials(
                         loginUiState.login,
                         loginUiState.password
                     )
@@ -113,8 +139,6 @@ fun LoginScreen(
                     isLoginFailed = true // Atualiza o estado da tela em caso de falha
                 }
             },
-            isLoginFailed = isLoginFailed, // Passa o estado do erro para o componente filho
-            onDismissLoginFailedDialog = { isLoginFailed = false } // Passa o callback para o filho
         )
     }
 }
@@ -128,8 +152,6 @@ fun LoginContainer(
     onUpdatePassword: (String) -> Unit,
     onUpdateIsChecked: (Boolean) -> Unit,
     onLoginClick: () -> Unit,
-    isLoginFailed: Boolean, // Recebe o estado do erro do pai
-    onDismissLoginFailedDialog: () -> Unit // Recebe o callback para fechar o diálogo
 ){
 
     val scrollState = rememberScrollState()
@@ -143,8 +165,8 @@ fun LoginContainer(
             .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ){
         CustomImageTextRow(
             contentDescription = "cabeça de robô Android",
@@ -188,19 +210,6 @@ fun LoginContainer(
                 .padding(vertical = 8.dp),
             spacerWidth = 0.dp
         )
-
-        if (isLoginFailed) {
-            AlertDialog(
-                onDismissRequest = onDismissLoginFailedDialog,
-                title = { Text("Falha no Login") },
-                text = { Text("Login ou senha incorretos. Por favor, tente novamente.") },
-                confirmButton = {
-                    TextButton(onClick = onDismissLoginFailedDialog) {
-                        Text("OK")
-                    }
-                }
-            )
-        }
 
         Row (
             modifier = Modifier
@@ -269,9 +278,7 @@ fun PreviewUILogin() {
                     onUpdateLogin = {},
                     onUpdatePassword = {},
                     onUpdateIsChecked = {},
-                    onLoginClick = {},
-                    isLoginFailed = false,
-                    onDismissLoginFailedDialog = {}
+                    onLoginClick = {}
                 )
             }
         }

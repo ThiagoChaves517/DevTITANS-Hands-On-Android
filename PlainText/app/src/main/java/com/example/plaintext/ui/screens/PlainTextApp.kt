@@ -9,6 +9,7 @@ import androidx.navigation.toRoute
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.editList.EditList
 import com.example.plaintext.ui.screens.hello.Hello_screen
+import com.example.plaintext.ui.screens.list.ListView
 import com.example.plaintext.ui.screens.login.LoginScreen
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
 import com.example.plaintext.ui.viewmodel.EditListViewModel
@@ -41,6 +42,19 @@ fun PlainTextApp(
                 preferencesViewModel = preferencesViewModel
             )
         }
+        // Construtor de rotas para a tela de configurações
+        // Screen.Preferences: Objeto serializável que associa uma rota a um Composable.
+        composable<Screen.Preferences> {
+            SettingsScreen(
+                navigateToLogin = { appState.navigateToLogin() },
+                viewModel = preferencesViewModel
+            )
+        }
+        // Construtor de rotas para a tela de Lista de senhas
+        // Screen.List: Objeto serializável que associa uma rota a um Composable.
+        composable<Screen.List> {
+            ListView()
+        }
         composable<Screen.EditList>(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
         ) {
@@ -51,13 +65,6 @@ fun PlainTextApp(
                 viewModel = hiltViewModel()
             )
         }
-        // Construtor de rotas para a tela de configurações
-        // Screen.Preferences: Objeto serializável que associa uma rota a um Composable.
-        composable<Screen.Preferences> {
-            SettingsScreen(
-                navigateToLogin = { appState.navigateToLogin() },
-                viewModel = preferencesViewModel
-            )
-        }
+
     }
 }

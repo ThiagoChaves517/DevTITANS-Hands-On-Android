@@ -33,9 +33,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
 import com.example.plaintext.data.model.PasswordInfo
 import com.example.plaintext.ui.screens.Screen
-import com.example.plaintext.ui.screens.login.CustomButton
-import com.example.plaintext.ui.screens.login.TopBarComponent
-import com.example.plaintext.ui.screens.login.CustomImageTextRow
+import com.example.plaintext.ui.screens.util.CustomButton
+import com.example.plaintext.ui.screens.util.CustomImageTextRow
+import com.example.plaintext.ui.screens.util.TopBarComponent
 import com.example.plaintext.ui.theme.PlainTextTheme
 import com.example.plaintext.ui.viewmodel.EditListViewModel
 

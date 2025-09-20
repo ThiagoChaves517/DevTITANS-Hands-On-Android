@@ -1,5 +1,7 @@
 package com.example.plaintext.ui.screens.util
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.Button
@@ -24,6 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +39,22 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.plaintext.R
+import android.view.Gravity
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.VpnKey
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.modifier.modifierLocalConsumer
 
 // Composable que representa uma linha com uma imagem e um texto
 @Composable
@@ -81,7 +103,7 @@ fun LoginInput(
     leadingIcon: ImageVector = Icons.Default.AccountBox,
     contentColor: Color = Color.White,
     isPasswordInput: Boolean = false
-){
+) {
     val visualTransformation = if (isPasswordInput) {
         PasswordVisualTransformation()
     } else {
@@ -96,7 +118,8 @@ fun LoginInput(
             Icon(
                 imageVector = leadingIcon,
                 contentDescription = "Icone de Entradada de Texto"
-            )},
+            )
+        },
         modifier = modifier,
         visualTransformation = visualTransformation,
         colors = OutlinedTextFieldDefaults.colors(
@@ -150,7 +173,7 @@ fun CustomButton(
     leadingIconRotation: Float = 0f,
     trailingIconRotation: Float = 0f,
     spacerWidth: Dp = 8.dp,
-    buttonColor: Color = colorResource(id =  R.color.login_button)
+    buttonColor: Color = colorResource(id = R.color.login_button)
 ) {
     Button(
         onClick = onClick,
@@ -193,5 +216,80 @@ fun CustomButton(
                 )
             }
         }
+    }
+}
+
+///**
+// * Composable reutilizável para exibir um Toast.
+// *
+// * @param showToast Um booleano que, quando true, dispara a exibição do Toast.
+// * @param message A mensagem a ser exibida no Toast.
+// * @param onToastShown Uma função de callback para ser chamada após o Toast ser exibido,
+// * permitindo que o estado (showToast) seja redefinido para false.
+// */
+//@Composable
+//fun ToastComposable(
+//    showToast: Boolean,
+//    message: String,
+//) {
+//
+//    if (showToast) {
+//        Toast.makeText(
+//            context = LocalContext.current,
+//
+//            message,
+//            Toast.LENGTH_SHORT).show()
+//    }
+//}
+
+@Composable
+fun CustomSnackbarHost(snackbarHostState: SnackbarHostState) {
+    SnackbarHost(snackbarHostState) { data ->
+        Snackbar(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .alpha(0.9f)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AndroidIconWithRoundedImageBackground()
+                Text(
+                    text = data.visuals.message,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AndroidIconWithRoundedImageBackground() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+//            .padding(8.dp)
+            .size(52.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_background),
+            contentDescription = "Imagem de fundo",
+            modifier = Modifier
+                .size(52.dp)
+                .clip(shape = RoundedCornerShape(6.dp))
+//                .clip(CircleShape)
+        )
+        Icon(
+            imageVector = Icons.Default.Android,
+            contentDescription = "Ícone do Android",
+            tint = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier.size(36.dp)
+        )
     }
 }
