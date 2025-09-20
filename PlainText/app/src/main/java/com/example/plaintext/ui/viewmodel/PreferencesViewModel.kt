@@ -30,7 +30,7 @@ open class PreferencesViewModel @Inject constructor(
         PreferencesState(
             login = "devtitans",
             password = "Senha@123",
-            preencher = false
+            preencher = true
         )
     )
 

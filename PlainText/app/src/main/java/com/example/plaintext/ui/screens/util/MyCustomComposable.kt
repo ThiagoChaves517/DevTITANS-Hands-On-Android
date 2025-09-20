@@ -43,6 +43,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 
 // Composable que representa uma linha com uma imagem e um texto
 @Composable
@@ -218,16 +219,23 @@ fun CustomSnackbarHost(snackbarHostState: SnackbarHostState) {
                 .alpha(0.9f)
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AndroidIconWithRoundedImageBackground()
+                AndroidIconWithRoundedImageBackground(
+                    iconContent = {
+                        Icon(
+                            imageVector = Icons.Default.Android,
+                            contentDescription = "icon",
+                            tint = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
+                )
                 Text(
                     text = data.visuals.message,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         }
@@ -235,24 +243,32 @@ fun CustomSnackbarHost(snackbarHostState: SnackbarHostState) {
 }
 
 @Composable
-fun AndroidIconWithRoundedImageBackground() {
+fun AndroidIconWithRoundedImageBackground(
+    backgroundPainter: Painter = painterResource(id = R.drawable.ic_launcher_background),
+//    iconImageVector: ImageVector = Icons.Default.Android,
+    iconContent: @Composable () -> Unit,
+    backgroundSize: Dp = 52.dp,
+//    iconSize: Dp = 36.dp,
+    cornerRadius: Dp = 6.dp,
+//    iconTint: Color = MaterialTheme.colorScheme.onErrorContainer
+) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(52.dp)
+        modifier = Modifier.size(backgroundSize)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = "Imagem de fundo",
+            painter = backgroundPainter,
+            contentDescription = "background",
             modifier = Modifier
-                .size(52.dp)
-                .clip(shape = RoundedCornerShape(6.dp))
+                .size(backgroundSize)
+                .clip(shape = RoundedCornerShape(cornerRadius))
         )
-        Icon(
-            imageVector = Icons.Default.Android,
-            contentDescription = "Ícone do Android",
-            tint = MaterialTheme.colorScheme.onErrorContainer,
-            modifier = Modifier.size(36.dp)
-        )
+        iconContent()
+//        Icon(
+//            imageVector = iconImageVector,
+//            contentDescription = "icon",
+//            tint = iconTint,
+//            modifier = Modifier.size(iconSize)
+//        )
     }
 }

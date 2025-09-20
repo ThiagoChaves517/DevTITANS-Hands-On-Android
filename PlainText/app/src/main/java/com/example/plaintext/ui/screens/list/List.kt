@@ -3,6 +3,8 @@ package com.example.plaintext.ui.screens.list
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -38,23 +41,70 @@ import com.example.plaintext.ui.viewmodel.ListViewModel
 import com.example.plaintext.ui.viewmodel.ListViewState
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.data.model.PasswordInfo
+import com.example.plaintext.ui.screens.util.AndroidIconWithRoundedImageBackground
+import com.example.plaintext.ui.screens.util.ListItem
+
+//Lista fake para teste
+val fakePasswordList = listOf(
+    PasswordInfo(
+        id = 1,
+        name = "Netflix",
+        login = "joao.silva@email.com",
+        password = "senha123",
+        notes = "Assinatura mensal"
+    ),
+    PasswordInfo(
+        id = 2,
+        name = "Google",
+        login = "joao.silva@gmail.com",
+        password = "senha-google",
+        notes = "Autenticação em dois fatores ativada"
+    ),
+    PasswordInfo(
+        id = 3,
+        name = "Github",
+        login = "joao.dev",
+        password = "senha-github",
+        notes = "Usar com cuidado"
+    )
+)
 
 @Composable
-fun ListView(
-) {}
+fun ListView() {
+    Scaffold (
+        floatingActionButton = {
+            AddButton(onClick = { })
+        },
+        containerColor = colorResource(id = R.color.background_container),
+        contentColor = colorResource(id = R.color.font_screen)
+    ) {
+        ListItemContent(
+            modifier = Modifier.padding(it),
+            listState = ListViewState(fakePasswordList, true),
+            navigateToEdit = { }
+        )
+    }
+}
 
 @Composable
 fun AddButton(onClick: () -> Unit) {
     FloatingActionButton(
         onClick = { onClick() },
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.secondary
+        containerColor = colorResource(id = R.color.login_button),
+        contentColor = colorResource(id = R.color.font_screen),
+        shape = RoundedCornerShape(50),
     ) {
-        Icon(Icons.Filled.Add, "Small floating action button.")
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Small floating action button.",
+        )
     }
 }
 
@@ -65,25 +115,25 @@ fun ListItemContent(
     listState: ListViewState,
     navigateToEdit: (password: PasswordInfo) -> Unit
 ) {
-        when {
-            !listState.isCollected -> {
-                LoadingScreen()
-            }
-
-            else -> {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize()
-                ) {
-                    items(listState.passwordList.size) {
-                        ListItem(
-                            listState.passwordList[it],
-                            navigateToEdit
-                        )
-                    }
+    // usado para exibir uma mensagem de carregamento enquanto os dados são carregados
+    when {
+        !listState.isCollected -> {
+            LoadingScreen()
+        }
+        else -> {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+            ) {
+                items(listState.passwordList.size) {
+                    ListItem(
+                        listState.passwordList[it],
+                        navigateToEdit
+                    )
                 }
             }
         }
+    }
 }
 
 @Composable
@@ -94,41 +144,5 @@ fun LoadingScreen() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text("Carregando")
-    }
-}
-
-@Composable
-fun ListItem(
-    password: PasswordInfo,
-    navigateToEdit: (password: PasswordInfo) -> Unit
-) {
-    val title = password.name
-    val subTitle = password.login
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .clickable { navigateToEdit(password) }
-            .padding(horizontal = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-            contentDescription = "Logo",
-            modifier = Modifier.fillMaxHeight()
-        )
-        Column(
-            modifier = Modifier
-                .weight(.7f)
-                .padding(horizontal = 5.dp),
-        ) {
-            Text(title, fontSize = 20.sp)
-            Text(subTitle, fontSize = 14.sp)
-        }
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Menu",
-            tint = Color.White
-        )
     }
 }
