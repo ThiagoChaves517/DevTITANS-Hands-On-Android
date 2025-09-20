@@ -1,5 +1,6 @@
 package com.example.plaintext.ui.screens.editList
 
+import android.R.attr.singleLine
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -75,40 +76,31 @@ fun EditList(
 
 @Composable
 fun EditInput(
+    modifier: Modifier = Modifier,
     textInputLabel: String,
     value: String, // Recebe o valor atual do estado
     onValueChange: (String) -> Unit, // Recebe a função para atualizar o estado
     //textInputState: MutableState<String> = mutableStateOf(""),
-    textInputHeight: Int = 60,
+    singleLine: Boolean = true,
     contentColor: Color = Color.White,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(textInputHeight.dp),
-            //.padding(horizontal = padding.dp),
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(textInputLabel) },
-            modifier = Modifier
-                .height(textInputHeight.dp)
-                .fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = contentColor,
-                unfocusedTextColor = contentColor,
-                focusedLeadingIconColor = contentColor,
-                unfocusedLeadingIconColor = contentColor,
-                focusedLabelColor = contentColor,
-                unfocusedLabelColor = contentColor,
-                focusedBorderColor = contentColor,
-                unfocusedBorderColor = contentColor
-            )
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(textInputLabel) },
+        singleLine = singleLine,
+        modifier = modifier,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedTextColor = contentColor,
+            unfocusedTextColor = contentColor,
+            focusedLeadingIconColor = contentColor,
+            unfocusedLeadingIconColor = contentColor,
+            focusedLabelColor = contentColor,
+            unfocusedLabelColor = contentColor,
+            focusedBorderColor = contentColor,
+            unfocusedBorderColor = contentColor
         )
-
-    }
+    )
     Spacer(modifier = Modifier.height(10.dp))
 }
 
@@ -153,16 +145,16 @@ fun EditPasswordContainer(
                 .fillMaxWidth()
         ) {
             EditInput(
-                "Nome", value = name, onValueChange = onNameChange
+                modifier = Modifier.fillMaxWidth(), "Nome", value = name, onValueChange = onNameChange,
             )
             EditInput(
-                "Usuário", value = login, onValueChange = onLoginChange
+                modifier = Modifier.fillMaxWidth(),"Usuário", value = login, onValueChange = onLoginChange
             )
             EditInput(
-                "Senha", value = password, onValueChange = onPasswordChange
+                modifier = Modifier.fillMaxWidth(),"Senha", value = password, onValueChange = onPasswordChange
             )
             EditInput(
-                "Notas", value = notes, onValueChange = onNotesChange
+                modifier = Modifier.fillMaxWidth().height(160.dp),"Notas", value = notes, onValueChange = onNotesChange, singleLine = false
             )
         }
 
@@ -232,16 +224,16 @@ fun AddNewPasswordContainer(
                 .fillMaxWidth()
         ) {
             EditInput(
-                "Nome", value = name, onValueChange = onNameChange
+                modifier = Modifier.fillMaxWidth(),"Nome", value = name, onValueChange = onNameChange
             )
             EditInput(
-                "Usuário", value = login, onValueChange = onLoginChange
+                modifier = Modifier.fillMaxWidth(),"Usuário", value = login, onValueChange = onLoginChange
             )
             EditInput(
-                "Senha", value = password, onValueChange = onPasswordChange
+                modifier = Modifier.fillMaxWidth(),"Senha", value = password, onValueChange = onPasswordChange
             )
             EditInput(
-                "Notas", value = notes, onValueChange = onNotesChange
+                modifier = Modifier.fillMaxWidth().height(160.dp),"Notas", value = notes, onValueChange = onNotesChange, singleLine = false
             )
         }
 
