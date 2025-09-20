@@ -3,6 +3,7 @@ package com.example.plaintext.data.repository
 import com.example.plaintext.data.dao.PasswordDao
 import com.example.plaintext.data.model.Password
 import com.example.plaintext.data.model.PasswordInfo
+import com.example.plaintext.data.model.toPassword
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -35,13 +36,20 @@ class LocalPasswordDBStore(
     }
 
     override suspend fun save(passwordInfo: PasswordInfo) {
-        val password = Password(
-            id = passwordInfo.id,
-            name = passwordInfo.name,
-            login = passwordInfo.login,
-            password = passwordInfo.password,
-            notes = passwordInfo.notes
-        )
+//        val password = Password(
+//            id = passwordInfo.id,
+//            name = passwordInfo.name,
+//            login = passwordInfo.login,
+//            password = passwordInfo.password,
+//            notes = passwordInfo.notes
+//        )
+        val password = passwordInfo.toPassword()
+
+        if (password.id == 0) {
+            add(password)
+        } else {
+            update(password)
+        }
     }
 
     override suspend fun isEmpty(): Flow<Boolean> {

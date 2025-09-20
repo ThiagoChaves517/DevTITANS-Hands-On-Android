@@ -53,7 +53,7 @@ fun ListItem(
                 .weight(.7f)
                 .background(
                     color = colorResource(R.color.login_row_background),
-                    shape = RoundedCornerShape(5.dp)
+//                    shape = RoundedCornerShape(5.dp)
                 )
                 .padding(all = 5.dp),
 

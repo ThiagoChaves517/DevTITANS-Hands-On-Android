@@ -18,7 +18,7 @@ import kotlin.reflect.KProperty
 )
 @Immutable
 data class Password(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Int,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "login") val login: String,

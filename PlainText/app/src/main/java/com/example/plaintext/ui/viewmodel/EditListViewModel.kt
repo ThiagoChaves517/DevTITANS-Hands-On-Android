@@ -20,14 +20,15 @@ class EditListViewModel @Inject constructor(
     // Função para salvar ou atualizar a senha na base de dados
     fun savePassword(passwordInfo: PasswordInfo) {
         viewModelScope.launch {
-            // A sua entidade do Room é 'Password', então convertemos 'PasswordInfo'
-            if (passwordInfo.id == 0) {
-                // Se o ID for 0, é uma nova senha, então inserimos
-                passwordDBStore.add(passwordInfo.toPassword())
-            } else {
-                // Caso contrário, atualizamos a existente
-                passwordDBStore.update(passwordInfo.toPassword())
-            }
+            passwordDBStore.save(passwordInfo)
+//            // A sua entidade do Room é 'Password', então convertemos 'PasswordInfo'
+//            if (passwordInfo.id == 0) {
+//                // Se o ID for 0, é uma nova senha, então inserimos
+//                passwordDBStore.add(passwordInfo.toPassword())
+//            } else {
+//                // Caso contrário, atualizamos a existente
+//                passwordDBStore.update(passwordInfo.toPassword())
+//            }
         }
     }
 }

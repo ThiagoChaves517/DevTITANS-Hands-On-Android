@@ -77,17 +77,26 @@ val fakePasswordList = listOf(
 )
 
 @Composable
-fun ListView() {
+fun ListView(
+    navigateToEdit: (password: PasswordInfo) -> Unit,
+    listViewModel: ListViewModel = hiltViewModel()
+) {
+    val listViewState = listViewModel.listViewState
+
     Scaffold (
         floatingActionButton = {
-            AddButton(onClick = { })
+            AddButton(onClick = {
+                navigateToEdit(
+                    PasswordInfo(0, "", "", "", "")
+                )
+            })
         },
         containerColor = colorResource(id = R.color.background_container),
         contentColor = colorResource(id = R.color.font_screen)
     ) {
         ListItemContent(
             modifier = Modifier.padding(it),
-            listState = ListViewState(fakePasswordList, true),
+            listState = listViewState,
             navigateToEdit = { }
         )
     }

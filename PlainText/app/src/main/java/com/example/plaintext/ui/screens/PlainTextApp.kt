@@ -54,7 +54,9 @@ fun PlainTextApp(
         // Construtor de rotas para a tela de Lista de senhas
         // Screen.List: Objeto serializável que associa uma rota a um Composable.
         composable<Screen.List> {
-            ListView()
+            ListView(
+                navigateToEdit = { appState.navigateToEdit(it) }
+            )
         }
         composable<Screen.EditList>(
             typeMap = mapOf(typeOf<PasswordInfo>() to parcelableType<PasswordInfo>())
@@ -62,7 +64,7 @@ fun PlainTextApp(
             val args = it.toRoute<Screen.EditList>()
             EditList(
                 args,
-                navigateBack = {},
+                navigateBack = {appState.navController.navigateUp()},
                 viewModel = hiltViewModel()
             )
         }
