@@ -35,7 +35,7 @@ sealed class Screen() {
 
     @Serializable
     data class EditList(
-        val password: PasswordInfo
+        val passwordId: Int
     );
 
     @Serializable
@@ -79,7 +79,7 @@ class JetcasterAppState(
     }
 
     fun navigateToEdit(password: PasswordInfo){
-        navController.navigate(Screen.EditList(password))
+        navController.navigate(Screen.EditList(password.id))
     }
 }
 

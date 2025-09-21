@@ -1,6 +1,5 @@
 package com.example.plaintext.ui.screens.editList
 
-import android.R.attr.singleLine
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.plaintext.R
 import com.example.plaintext.data.model.PasswordInfo
-import com.example.plaintext.ui.screens.Screen
 import com.example.plaintext.ui.screens.util.CustomButton
 import com.example.plaintext.ui.screens.util.CustomImageTextRow
 import com.example.plaintext.ui.screens.util.TopBarComponent
@@ -42,33 +41,31 @@ import com.example.plaintext.ui.viewmodel.EditListViewModel
 
 @Composable
 fun EditList(
-    args: Screen.EditList, // Argumento recebido pela navegação
+    passwordId: Int, // Argumento recebido pela navegação
     navigateBack: () -> Unit,
     viewModel: EditListViewModel = hiltViewModel()
 ) {
     // Verificamos se o ID é 0. Se for, consideramos que é uma nova senha.
     // Esta é uma convenção comum.
-    val isNewPassword = args.password.id == 0
+//    val isNewPassword = args.password.id == 0
+    val passwordInfo by viewModel.getPasswordInfo(passwordId).collectAsState(initial = null)
 
-    if (isNewPassword) {
+    if (passwordId == 0) {
         // Se for uma nova senha, exibe a tela de adição de senha.
         AddNewPasswordScreen(
             onSaveClick = { passwordInfo ->
                 viewModel.savePassword(passwordInfo)
                 navigateBack()
             },
-            navigateBack = navigateBack,
             navigateToSettings = {}
         )
-    } else {
-        // Se a senha já existir, mostramos a tela de edição, passando os dados.
+    } else passwordInfo?.let {
         EditPasswordScreen(
-            passwordInfo = args.password,
+            passwordInfo = it,
             onSaveClick = { passwordInfo ->
                 viewModel.savePassword(passwordInfo)
                 navigateBack()
             },
-            navigateBack = navigateBack,
             navigateToSettings = {}
         )
     }
@@ -80,7 +77,6 @@ fun EditInput(
     textInputLabel: String,
     value: String, // Recebe o valor atual do estado
     onValueChange: (String) -> Unit, // Recebe a função para atualizar o estado
-    //textInputState: MutableState<String> = mutableStateOf(""),
     singleLine: Boolean = true,
     contentColor: Color = Color.White,
 ) {
@@ -269,7 +265,6 @@ fun EditPasswordScreen(
     modifier: Modifier = Modifier,
     passwordInfo: PasswordInfo,
     onSaveClick: (PasswordInfo) -> Unit,
-    navigateBack: () -> Unit,
     navigateToSettings: () -> Unit,
 ) {
     // Um estado para cada campo, inicializado com os valores da senha
@@ -309,7 +304,6 @@ fun EditPasswordScreen(
 fun AddNewPasswordScreen(
     modifier: Modifier = Modifier,
     onSaveClick: (PasswordInfo) -> Unit,
-    navigateBack: () -> Unit,
     navigateToSettings: () -> Unit,
 ) {
     // Um estado para cada campo, inicializado com os valores da senha

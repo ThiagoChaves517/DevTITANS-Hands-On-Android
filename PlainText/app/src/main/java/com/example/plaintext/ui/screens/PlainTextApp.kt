@@ -1,7 +1,6 @@
 package com.example.plaintext.ui.screens
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,7 +11,6 @@ import com.example.plaintext.ui.screens.hello.Hello_screen
 import com.example.plaintext.ui.screens.list.ListView
 import com.example.plaintext.ui.screens.login.LoginScreen
 import com.example.plaintext.ui.screens.preferences.SettingsScreen
-import com.example.plaintext.ui.viewmodel.EditListViewModel
 import com.example.plaintext.ui.viewmodel.LoginViewModel
 import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 import com.example.plaintext.utils.parcelableType
@@ -28,11 +26,10 @@ fun PlainTextApp(
     NavHost(
         navController = appState.navController,
         startDestination = Screen.Login
-//        startDestination = Screen.Hello("DevTITANS")
     )
     {
         composable<Screen.Hello>{
-            var args = it.toRoute<Screen.Hello>()
+            val args = it.toRoute<Screen.Hello>()
             Hello_screen(args)
         }
         composable<Screen.Login>{
@@ -63,7 +60,7 @@ fun PlainTextApp(
         ) {
             val args = it.toRoute<Screen.EditList>()
             EditList(
-                args,
+                passwordId = args.passwordId,
                 navigateBack = {appState.navController.navigateUp()},
                 viewModel = hiltViewModel()
             )

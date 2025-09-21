@@ -26,7 +26,6 @@ import com.example.plaintext.ui.viewmodel.PreferencesViewModel
 
 @Composable
 fun SettingsScreen(
-//    navController: NavHostController?,
     navigateToLogin: () -> Unit,
     viewModel: PreferencesViewModel
 ){
@@ -40,7 +39,6 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopBarComponent(
-//                navigateToSettings = { navController?.navigateUp() },
                 navigateToSettings = navigateToLogin,
                 showAboutDialog = { showAboutDialog = true },
                 isOnPreferencesScreen = true

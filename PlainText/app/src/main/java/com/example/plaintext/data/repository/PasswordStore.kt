@@ -11,7 +11,7 @@ interface PasswordDBStore {
     fun getList(): Flow<List<Password>>
     suspend fun add(password: Password): Long
     suspend fun update(password: Password)
-    fun get(id: Int): Password?
+    suspend fun get(id: Int): Password?
     suspend fun save(passwordInfo: PasswordInfo)
     suspend fun isEmpty(): Flow<Boolean>
 }
@@ -31,18 +31,11 @@ class LocalPasswordDBStore(
         passwordDao.update(password)
     }
 
-    override fun get(id: Int): Password? {
+    override suspend fun get(id: Int): Password? {
        return passwordDao.getPasswordById(id)
     }
 
     override suspend fun save(passwordInfo: PasswordInfo) {
-//        val password = Password(
-//            id = passwordInfo.id,
-//            name = passwordInfo.name,
-//            login = passwordInfo.login,
-//            password = passwordInfo.password,
-//            notes = passwordInfo.notes
-//        )
         val password = passwordInfo.toPassword()
 
         if (password.id == 0) {

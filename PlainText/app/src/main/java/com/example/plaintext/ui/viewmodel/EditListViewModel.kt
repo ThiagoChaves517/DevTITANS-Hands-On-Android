@@ -4,9 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plaintext.data.model.PasswordInfo
-import com.example.plaintext.data.model.toPassword
+import com.example.plaintext.data.model.toPasswordInfo
 import com.example.plaintext.data.repository.PasswordDBStore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,18 +19,18 @@ class EditListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    fun getPasswordInfo(id: Int): Flow<PasswordInfo?> {
+        return flow {
+            // Busque o item do banco de dados usando o ID
+            val password = passwordDBStore.get(id)
+            emit(password?.toPasswordInfo()) // Converta para PasswordInfo
+        }
+    }
+
     // Função para salvar ou atualizar a senha na base de dados
     fun savePassword(passwordInfo: PasswordInfo) {
         viewModelScope.launch {
             passwordDBStore.save(passwordInfo)
-//            // A sua entidade do Room é 'Password', então convertemos 'PasswordInfo'
-//            if (passwordInfo.id == 0) {
-//                // Se o ID for 0, é uma nova senha, então inserimos
-//                passwordDBStore.add(passwordInfo.toPassword())
-//            } else {
-//                // Caso contrário, atualizamos a existente
-//                passwordDBStore.update(passwordInfo.toPassword())
-//            }
         }
     }
 }

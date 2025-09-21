@@ -11,5 +11,5 @@ abstract class PasswordDao : BaseDao<Password> {
     abstract fun getAllPasswords(): Flow<List<Password>>
 
     @Query("SELECT * FROM passwords WHERE id = :id")
-    abstract fun getPasswordById(id: Int): Password?
+    abstract suspend fun getPasswordById(id: Int): Password?
 }
